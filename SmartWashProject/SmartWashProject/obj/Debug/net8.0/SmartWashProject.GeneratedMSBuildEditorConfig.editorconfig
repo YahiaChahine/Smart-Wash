@@ -9,43 +9,43 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = SmartWashProject
 build_property.RootNamespace = SmartWashProject
-build_property.ProjectDir = D:\Github\stoopid shit\SoftwareEng\Smart-Wash\SmartWashProject\SmartWashProject\
+build_property.ProjectDir = C:\Users\muath\Projects\WebApps\Smart-Wash\SmartWashProject\SmartWashProject\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\Github\stoopid shit\SoftwareEng\Smart-Wash\SmartWashProject\SmartWashProject
+build_property.MSBuildProjectDirectory = C:\Users\muath\Projects\WebApps\Smart-Wash\SmartWashProject\SmartWashProject
 build_property._RazorSourceGeneratorDebug = 
 
-[D:/Github/stoopid shit/SoftwareEng/Smart-Wash/SmartWashProject/SmartWashProject/App.razor]
+[C:/Users/muath/Projects/WebApps/Smart-Wash/SmartWashProject/SmartWashProject/App.razor]
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/stoopid shit/SoftwareEng/Smart-Wash/SmartWashProject/SmartWashProject/Pages/Index.razor]
+[C:/Users/muath/Projects/WebApps/Smart-Wash/SmartWashProject/SmartWashProject/Pages/Index.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/stoopid shit/SoftwareEng/Smart-Wash/SmartWashProject/SmartWashProject/Shared/SurveyPrompt.razor]
+[C:/Users/muath/Projects/WebApps/Smart-Wash/SmartWashProject/SmartWashProject/Shared/SurveyPrompt.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFN1cnZleVByb21wdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/stoopid shit/SoftwareEng/Smart-Wash/SmartWashProject/SmartWashProject/_Imports.razor]
+[C:/Users/muath/Projects/WebApps/Smart-Wash/SmartWashProject/SmartWashProject/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/stoopid shit/SoftwareEng/Smart-Wash/SmartWashProject/SmartWashProject/Shared/MainLayout.razor]
+[C:/Users/muath/Projects/WebApps/Smart-Wash/SmartWashProject/SmartWashProject/Shared/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-w73u8iw5zp
 
-[D:/Github/stoopid shit/SoftwareEng/Smart-Wash/SmartWashProject/SmartWashProject/Shared/NavMenu.razor]
+[C:/Users/muath/Projects/WebApps/Smart-Wash/SmartWashProject/SmartWashProject/Shared/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-6b78y5nggb
 
-[D:/Github/stoopid shit/SoftwareEng/Smart-Wash/SmartWashProject/SmartWashProject/Pages/_Host.cshtml]
+[C:/Users/muath/Projects/WebApps/Smart-Wash/SmartWashProject/SmartWashProject/Pages/_Host.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/stoopid shit/SoftwareEng/Smart-Wash/SmartWashProject/SmartWashProject/Pages/_Layout.cshtml]
+[C:/Users/muath/Projects/WebApps/Smart-Wash/SmartWashProject/SmartWashProject/Pages/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0xheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
