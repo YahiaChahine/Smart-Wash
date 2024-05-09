@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SmartWashProject.Data;
+using SmartWash.Infrastructure.Data;
 
 #nullable disable
 
-namespace SmartWashProject.Migrations
+namespace SmartWash.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
     partial class DataContextModelSnapshot : ModelSnapshot
@@ -316,6 +316,43 @@ namespace SmartWashProject.Migrations
                     b.ToTable("Bookings");
                 });
 
+            modelBuilder.Entity("SmartWashProject.Entities.CreditCard", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("CVV")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CardHolderName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CardNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExpirationDate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("CreditCards");
+                });
+
             modelBuilder.Entity("SmartWashProject.Entities.Feedback", b =>
                 {
                     b.Property<int>("ID")
@@ -481,6 +518,15 @@ namespace SmartWashProject.Migrations
                         .HasForeignKey("UserId1");
 
                     b.Navigation("Machine");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SmartWashProject.Entities.CreditCard", b =>
+                {
+                    b.HasOne("SmartWashProject.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId1");
 
                     b.Navigation("User");
                 });

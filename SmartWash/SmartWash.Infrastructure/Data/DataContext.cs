@@ -1,8 +1,8 @@
-﻿using SmartWashProject.Entities;
+﻿using SmartWash.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace SmartWashProject.Data
+namespace SmartWash.Infrastructure.Data
 {
     public class DataContext : IdentityDbContext<ApplicationUser>
     {

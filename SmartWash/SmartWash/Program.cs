@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using SmartWash.Application;
 using SmartWash.Domain;
 using SmartWash.Infrastructure;
-using SmartWashProject.Data;
+using SmartWash.Infrastructure.Data;
+using SmartWash.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,8 +23,19 @@ builder.Services.AddDomain();
 //DataAccess
 var cs = builder.Configuration.GetConnectionString("LocalServer");
 builder.Services.AddDbContextFactory<DataContext>(options => options.UseSqlServer(cs));
-
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(cs));
+
+//Identity
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 5;
+    options.SignIn.RequireConfirmedEmail = true;
+}).AddEntityFrameworkStores<DataContext>();
+
 
 var app = builder.Build();
 

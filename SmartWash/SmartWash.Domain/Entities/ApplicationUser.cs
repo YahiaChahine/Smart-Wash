@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace SmartWashProject.Entities
+namespace SmartWash.Domain.Entities
 {
     public class ApplicationUser : IdentityUser
     {

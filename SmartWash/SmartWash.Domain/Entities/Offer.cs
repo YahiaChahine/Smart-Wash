@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace SmartWashProject.Entities
+namespace SmartWash.Domain.Entities
 {
     public class Offer
     {
