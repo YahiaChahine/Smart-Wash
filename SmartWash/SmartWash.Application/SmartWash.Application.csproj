@@ -14,8 +14,4 @@
     <ProjectReference Include="..\SmartWash.Domain\SmartWash.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="BookingSystem\" />
-  </ItemGroup>
-
 </Project>
