@@ -1,0 +1,16 @@
+﻿@inherits MudThemeProvider
+
+<MudThemeProvider Theme="@Theme" />
+
+@code {
+
+    private MudTheme Theme { get; set; } = new MudTheme()
+    {
+        LayoutProperties = new()
+        { 
+            AppbarHeight = "0"
+
+        }
+    };
+
+}

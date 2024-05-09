@@ -39,8 +39,8 @@ namespace SmartWash.WebUI.Areas.Identity.Pages.Account
                 {
 					ModelState.AddModelError(string.Empty, "Invalid login attempt.");
 				}
-					return Page();
             }
+			return Page();
         }
 
         public class InputModel
