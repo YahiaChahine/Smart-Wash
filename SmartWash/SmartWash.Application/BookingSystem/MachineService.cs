@@ -19,14 +19,13 @@ namespace SmartWash.Application.BookingSystem
 
 		public async Task<Machine> CreateMachineAsync(Machine machine)
 		{
-			// Check if the booking does not overlap with another booking
 
 			var createdBooking = await _machineRepository.AddAsync(machine);
 
 			return createdBooking;
 		}
 
-		public async Task<Machine> CancelMachineAsync(int machineId)
+		public async Task<Machine> DeleteMachineAsync(int machineId)
 		{
 			var machine = await _machineRepository.GetByIdAsync(machineId);
 			if (machine == null)
@@ -34,9 +33,7 @@ namespace SmartWash.Application.BookingSystem
 				throw new Exception("Machine not found");
 			}
 
-			machine.Cancel();
-
-			await _machineRepository.UpdateAsync(machine);
+			await _machineRepository.DeleteAsync(machineId);
 
 			return machine;
 		}
