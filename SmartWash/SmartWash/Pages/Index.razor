@@ -1,1 +1,27 @@
 ﻿@page "/"
+
+
+<MudContainer Class="fullscreen-section">
+    <div class="d-flex object-start flex-row" style="width: 100%;">
+        <MudText Typo="Typo.h6">SmartWash</MudText>
+        <MudSpacer/>
+        <MudButton Link="/">Home</MudButton>
+        <MudButton Link="/about">About</MudButton>
+        <MudButton Link="/login">Login</MudButton>
+        <MudButton Link="/signup">Sign Up</MudButton>
+    </div>
+
+    <MudText Align="Align.Center" Typo="Typo.h4" Class="my-10">Your one-stop solution for a clean and quick wash.</MudText>
+
+    <MudText Typo="Typo.h5" Class="my-4">Browse Available Machines:</MudText>
+
+    <MudContainer Class="d-flex align-center gap-5 justify-center" Style="width: 100%;">
+        <MudButton FullWidth="true" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.LocalLaundryService">Washing Machine</MudButton>
+        <MudButton FullWidth="true" Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.DryCleaning" Class="ml-2">Drying Machine</MudButton>
+    </MudContainer>
+
+
+    <MudText Typo="Typo.h4" Class="my-4">Revolutionizing Laundry - One Wash at a Time!</MudText>
+</MudContainer>
+
+<MudText Typo="Typo.body1" Class="my-4">© 2024 SmartWash Laundromat. All rights reserved.</MudText>

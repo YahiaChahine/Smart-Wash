@@ -3,32 +3,17 @@
 
 <PageTitle>SmartWashProject</PageTitle>
 
-<MudThemeProvider/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
+<SmartWashThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
+<MudLayout>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
 
-
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-  @*   <AuthorizeView>
-            <Authorized> *@
-                <main>
-                    <article class="content px-4">
-                        @Body
-                    </article>
-                </main>
-@*             </Authorized>
-        <NotAuthorized> *@
-<h1>Not Authorized</h1>
-			<p>You're not authorized to access this page.</p>
-@*         </NotAuthorized>
-    </AuthorizeView> *@
-</div>
-
-  
+@*TODO: Add authorization back when done*@
 
 
 
