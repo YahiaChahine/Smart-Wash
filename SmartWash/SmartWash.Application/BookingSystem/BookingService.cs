@@ -49,7 +49,7 @@ namespace SmartWash.Application.BookingSystem
 
         public async Task<Booking> ModifyBookingAsync(Booking updatedBooking)
         {
-            var booking = await _bookingRepository.GetByIdAsync(updatedBooking.Id);
+            var booking = await _bookingRepository.GetByIdAsync(updatedBooking.ID);
             if (booking == null)
             {
                 throw new Exception("Booking not found");
