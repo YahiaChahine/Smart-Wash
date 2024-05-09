@@ -17,9 +17,6 @@
     <PackageReference Include="MudBlazor" Version="6.19.1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Areas\Identity\Pages\Account\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\SmartWash.Infrastructure\SmartWash.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

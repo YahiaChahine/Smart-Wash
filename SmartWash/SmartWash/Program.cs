@@ -34,7 +34,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequiredLength = 5;
     options.SignIn.RequireConfirmedEmail = true;
-}).AddEntityFrameworkStores<DataContext>();
+})
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<DataContext>();
 
 
 var app = builder.Build();

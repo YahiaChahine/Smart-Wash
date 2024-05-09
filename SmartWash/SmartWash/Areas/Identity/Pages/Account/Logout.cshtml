@@ -1,4 +1,15 @@
 ﻿@page
-@model SmartWashProject.Areas.Identity.Pages.Account.LogoutModel
-@{
+@model SmartWash.WebUI.Areas.Identity.Pages.Account.LogoutModel
+@using Microsoft.AspNetCore.Identity
+@using SmartWash.Domain.Entities
+@inject SignInManager<ApplicationUser> SignInManager
+@functions{
+	public async Task<IActionResult> OnGetAsync()
+	{
+		if (SignInManager.IsSignedIn(User))
+		{
+			await SignInManager.SignOutAsync();
+		}
+		return Redirect("~/");
+	}
 }
