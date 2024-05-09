@@ -10,11 +10,16 @@ namespace SmartWash.WebUI.Areas.Identity.Pages.Account
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public RegisterModel( UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        private string userRole = "Member";
+
+        public RegisterModel( UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
+            RoleManager<IdentityRole> roleManager)
         {
 			_userManager = userManager;
 			_signInManager = signInManager;
+            _roleManager = roleManager;
 		}
 
         public InputModel input { get; set; }
@@ -38,6 +43,19 @@ namespace SmartWash.WebUI.Areas.Identity.Pages.Account
                 }
                 var identity = new ApplicationUser { UserName = input.Fullname, Email = input.Email, PhoneNumber = input.PhoneNumber};
                 var result = await _userManager.CreateAsync(identity, input.Password);
+
+                var role = new IdentityRole(userRole);
+                var roleExists = await _roleManager.FindByNameAsync(userRole);
+                if (roleExists == null)
+                {
+                    var addRoleResults = await _roleManager.CreateAsync(role);
+                    if (!addRoleResults.Succeeded)
+                    {
+                        return Page();
+                    }
+                }
+
+                var addUserRoleResult = await _userManager.AddToRoleAsync(identity, userRole);
 
                 if (result.Succeeded) {
                     await _signInManager.SignInAsync(identity, isPersistent: false);
