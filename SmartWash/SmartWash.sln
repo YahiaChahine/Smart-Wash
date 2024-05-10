@@ -6,11 +6,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartWash.WebUI", "SmartWas
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{169283D7-2E8B-4338-8E67-F9A7B27E09CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartWash.Domain", "SmartWash.Domain\SmartWash.Domain.csproj", "{F3FF20C4-00B8-4360-957F-27B65C8DE114}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartWash.Domain", "SmartWash.Domain\SmartWash.Domain.csproj", "{F3FF20C4-00B8-4360-957F-27B65C8DE114}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartWash.Application", "SmartWash.Application\SmartWash.Application.csproj", "{454C421E-F6C2-4A82-A100-01B09E662543}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartWash.Application", "SmartWash.Application\SmartWash.Application.csproj", "{454C421E-F6C2-4A82-A100-01B09E662543}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartWash.Infrastructure", "SmartWash.Infrastructure\SmartWash.Infrastructure.csproj", "{B5827DE8-0469-441F-9C38-A05A4BECAD02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartWash.Infrastructure", "SmartWash.Infrastructure\SmartWash.Infrastructure.csproj", "{B5827DE8-0469-441F-9C38-A05A4BECAD02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,4 +1,5 @@
-﻿@page "/"
+﻿@page "/" 
+@inject NavigationManager NavigationManager
 
 <MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
     
@@ -8,21 +9,125 @@
     </div>
     
     <MudContainer>
-        <MudText Typo="Typo.h5" Class="my-4">Browse Available Machines:</MudText>
+        <MudText Typo="Typo.h5" Class="my-4">Choose a machine type:</MudText>
 
         <MudContainer Class="d-flex align-center gap-5 justify-center" Style="width: 100%;">
-            <MudButton Class="machine-category-button" FullWidth="true" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.LocalLaundryService" IconSize="Size.Large">Washing Machine</MudButton>
-            <MudButton Class="machine-category-button" FullWidth="true" Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.DryCleaning" IconSize="Size.Large">Drying Machine</MudButton>
+            <MudButton Class="machine-category-button" FullWidth="true" Variant="Variant.Filled" Color="Color.Primary" 
+                       StartIcon="@Icons.Material.Filled.LocalLaundryService" IconSize="Size.Large" OnClick="GoToBrowseWashing">Washing Machine</MudButton>
+
+            <MudButton Class="machine-category-button" FullWidth="true" Variant="Variant.Filled" Color="Color.Secondary" 
+                       StartIcon="@Icons.Material.Filled.DryCleaning" IconSize="Size.Large" OnClick="GoToBrowseDrying">Drying Machine</MudButton>
         </MudContainer>
     </MudContainer>
 </MudContainer>
 
 <MudContainer Class="fullscreen-section">
+    
     <MudText Typo="Typo.h4" Class="my-4">Revolutionizing Laundry, one wash at a time</MudText>
-
-    <MudContainer Class="d-flex align-center gap-5 justify-center" Style="width: 100%;">
-        <MudButton Class="service-button" FullWidth="true" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.LocalLaundryService" IconSize="Size.Large">Washing</MudButton>
-        <MudButton Class="service-button" FullWidth="true" Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.DryCleaning" IconSize="Size.Large">Drying</MudButton>
-        <MudButton Class="service-button" FullWidth="true" Variant="Variant.Filled" Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.LocalLaundryService" IconSize="Size.Large">Folding</MudButton>
-    </MudContainer>
+        <MudGrid Justify="Justify.SpaceBetween">
+            <MudItem md="6">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h5">Self Service</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIcon Icon="@Icons.Material.Filled.SelfImprovement" Size="Size.Large" Color="Color.Primary"/>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.body1">Enjoy the freedom to do your laundry at your own pace. Simply book online, then come in, load your clothes, and start the machines. No need to wait in line or deal with complicated processes.</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem md="6">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h5">Customer Support</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIcon Icon="@Icons.Material.Filled.ContactSupport" Size="Size.Large" Color="Color.Secondary"/>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.body1">Although our laundromat is self-service, we have staff available to assist you if needed. We’re committed to making your laundry experience as smooth as possible.
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem md="6">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h5">Eco-Friendly</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIcon Icon="@Icons.Material.Filled.NaturePeople" Size="Size.Large" Color="Color.Tertiary"/>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.body1">Our machines are energy-efficient and use less water than traditional home washing machines, making your laundry routine more environmentally friendly.</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem md="6">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h5">Efficiency</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIcon Icon="@Icons.Material.Filled.FastForward" Size="Size.Large" Color="Color.Primary"/>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.body1">With our high-capacity machines, you can wash and dry large loads of laundry in less time than it would take at home. Perfect for those with busy schedules!
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
 </MudContainer>
+
+<MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
+    <MudText Typo="Typo.h4" Class="my-4">Contact Us</MudText>
+    <MudStack Row="true" Spacing="10">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudTextField T="string" Label="Email" Variant="Variant.Filled"/>
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField T="string" Label="Name" Variant="Variant.Filled"/>
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField T="string" Label="Message" Lines="4" Variant="Variant.Filled"/>
+            </MudItem>
+            <MudItem xs="12" Class="d-flex justify-center">
+                <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Size="Size.Large" Class="mt-8" EndIcon="@Icons.Material.Filled.Send">Send</MudButton>
+            </MudItem>
+        </MudGrid>
+        
+        <MudCard Class="mud-theme-secondary" >
+            <MudCardHeader>
+                <MudText Typo="Typo.h4">Location</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText Typo="Typo.body1">1234 Main Street, City, State, 12345</MudText>
+                <MudText Typo="Typo.body1">Phone: 123-456-7890</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudStack>
+</MudContainer>
+
+@code
+{
+    private void GoToBrowseWashing()
+    {
+        NavigationManager.NavigateTo("/browse/washing-machine");
+    }
+    private void GoToBrowseDrying()
+    {
+        NavigationManager.NavigateTo("/browse/drying-machine");
+    }
+}

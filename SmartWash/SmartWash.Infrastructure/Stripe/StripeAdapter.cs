@@ -12,9 +12,9 @@ namespace SmartWash.Infrastructure.Stripe
 	{
 		private readonly StripeClient _stripeClient;
 
-		public StripeAdapter(string apiKey)
+		public StripeAdapter()
 		{
-			_stripeClient = new StripeClient(apiKey);
+			_stripeClient = new StripeClient();
 		}
 
 		public async Task<Charge> CreateChargeAsync(decimal amount, string currency, string cardToken)

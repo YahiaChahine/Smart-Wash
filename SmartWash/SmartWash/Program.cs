@@ -19,18 +19,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddDomain();
-
-//DataAccess
-var cs = builder.Configuration.GetConnectionString("LocalServer");
-builder.Services.AddDbContextFactory<DataContext>(options => options.UseSqlServer(cs));
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(cs));
-
-//Stripe config
-StripeConfiguration.ApiKey = builder.Configuration.GetValue<string>("StripeOptions:SecretKey");
-builder.Services.AddScoped<IStripeAdapter, StripeAdapter>();
 
 //Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
