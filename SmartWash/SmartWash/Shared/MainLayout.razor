@@ -1,15 +1,26 @@
 ﻿@inherits LayoutComponentBase
 @using MudBlazor
 
-<PageTitle>SmartWashProject</PageTitle>
+<PageTitle>Smart Wash</PageTitle>
 
 <SmartWashThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudMainContent>
-        @Body
+
+    <MudAppBar Fixed="false" Elevation="1">
+        <MudSpacer/>
+        <MudButton Link="/">Home</MudButton>
+        <MudButton Link="/about">About</MudButton>
+        <MudButton Link="/login">Login</MudButton>
+        <MudButton Link="/signup">Sign Up</MudButton>
+    </MudAppBar>
+
+    <MudMainContent Style="padding: 0;">
+        <MudContainer MaxWidth="MaxWidth.False" Style="padding: 0;">
+            @Body
+        </MudContainer>
     </MudMainContent>
 </MudLayout>
 

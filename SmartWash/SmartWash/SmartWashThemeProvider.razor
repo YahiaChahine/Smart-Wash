@@ -1,15 +1,21 @@
 ﻿@inherits MudThemeProvider
 
-<MudThemeProvider Theme="@Theme" />
+<MudThemeProvider Theme="@SmartTheme" />
 
 @code {
 
-    private MudTheme Theme { get; set; } = new MudTheme()
+    private MudTheme SmartTheme { get; set; } = new MudTheme()
     {
-        LayoutProperties = new()
-        { 
-            AppbarHeight = "0"
+        Palette = new()
+        {
+                Primary = "#19e787",
+                Secondary = "#81daf2",
+                Tertiary = "#5aabee",
+                AppbarBackground = "#f7fefb",
 
+            TextPrimary = "#02180d",
+
+                Background = "#f7fefb",
         }
     };
 
