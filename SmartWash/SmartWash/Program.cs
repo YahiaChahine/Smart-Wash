@@ -6,6 +6,7 @@ using MudBlazor.Services;
 using SmartWash.Application;
 using SmartWash.Domain;
 using SmartWash.Infrastructure;
+using SmartWash.Infrastructure.Repositories;
 using SmartWash.Infrastructure.Data;
 using SmartWash.Domain.Entities;
 using Stripe;
