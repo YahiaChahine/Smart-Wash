@@ -6,6 +6,7 @@ using MudBlazor.Services;
 using SmartWash.Application;
 using SmartWash.Domain;
 using SmartWash.Infrastructure;
+using SmartWash.Infrastructure.Repositories;
 using SmartWash.Infrastructure.Data;
 using SmartWash.Domain.Entities;
 using Stripe;
@@ -31,6 +32,14 @@ builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(cs));
 //Stripe config
 StripeConfiguration.ApiKey = builder.Configuration.GetValue<string>("StripeOptions:SecretKey");
 builder.Services.AddScoped<IStripeAdapter, StripeAdapter>();
+//include addscoped for all repositories i built ex FeedbackRepository and IFeedbackRepository .. etc
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IOfferRepository, OfferRepository>();
+builder.Services.AddScoped<IMachineRepository, MachineRepository>();
+builder.Services.AddScoped<ICreditCardRepository, CreditCardRepository>();
+builder.Services.AddScoped<IReplyRepository, ReplyRepository>();
+
 
 //Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
