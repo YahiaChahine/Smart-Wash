@@ -8,6 +8,9 @@ using SmartWash.Domain;
 using SmartWash.Infrastructure;
 using SmartWash.Infrastructure.Data;
 using SmartWash.Domain.Entities;
+using Stripe;
+using SmartWash.Infrastructure.Stripe;
+using SmartWash.Domain.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +27,10 @@ builder.Services.AddDomain();
 var cs = builder.Configuration.GetConnectionString("LocalServer");
 builder.Services.AddDbContextFactory<DataContext>(options => options.UseSqlServer(cs));
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(cs));
+
+//Stripe config
+StripeConfiguration.ApiKey = builder.Configuration.GetValue<string>("StripeOptions:SecretKey");
+builder.Services.AddScoped<IStripeAdapter, StripeAdapter>();
 
 //Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
