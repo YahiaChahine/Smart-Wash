@@ -67,17 +67,19 @@ namespace SmartWash.WebUI.Pages
 
         private void OnMachineClick(Machine machine)
         {
-            var booking = new Booking
+            
+            //StateContainer.ObjectTunnel[booking.GetHashCode()] = booking;
+
+            var uri = NavigationManager.GetUriWithQueryParameters("/Account/machine", new Dictionary<string, object?>()
             {
-                MachineId = machine.ID,
-                Machine = machine,
-                StartTime = SelectedDate.Value.Add(SelectedTime.Value),
-                CycleNum = Cycles,
-            };
+                { "machineId", machine.ID },
+                { "startTime", SelectedDate.Value.Add(SelectedTime.Value) },
+                { "cycleNum", Cycles },
+            });
 
-            StateContainer.ObjectTunnel[booking.GetHashCode()] = booking;
+            NavigationManager.NavigateTo(uri);
 
-            NavigationManager.NavigateTo($"/machine/{booking.GetHashCode()}");
+            //NavigationManager.NavigateTo($"/machine/{booking.GetHashCode()}");
         }
 
         private async Task UpdateMachines()
