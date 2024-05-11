@@ -1,13 +1,18 @@
 ﻿@page "/signup"
-@using SmartWash.Domain
-@using SmartWash.Domain.Entities
 @using System.ComponentModel.DataAnnotations
-@using Microsoft.AspNetCore.Identity.EntityFrameworkCore
+@using System.Text
+@using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Identity
-@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.WebUtilities
+@using SmartWash.WebUI.Account
+
 @inject UserManager<ApplicationUser> UserManager
-@inject RoleManager<IdentityRole> RoleManager
+@inject IUserStore<ApplicationUser> UserStore
 @inject SignInManager<ApplicationUser> SignInManager
+@inject IEmailSender<ApplicationUser> EmailSender
+@inject ILogger<Signup> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
 
 <MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
     <MudCard Style="width: 50%; max-width: 1000px;">
@@ -17,13 +22,11 @@
             </CardHeaderContent>
         </MudCardHeader>
         <MudCardContent>
-            <MudForm Model="input" OnValidSubmit="OnSubmit">
-                <MudTextField Label="Full Name" @bind-Value="@input.Fullname" Required="true" />
-                <MudTextField Label="Email" @bind-Value="@input.Email" Required="true" />
-                <MudTextField Label="Password" InputType="InputType.Password" @bind-Value="@input.Password" Required="true" />
-                <MudTextField Label="Confirm Password" InputType="InputType.Password" @bind-Value="@input.ConfirmPassword" Required="true" />
-                <MudTextField Label="Phone Number" @bind-Value="@input.PhoneNumber" Required="true" />
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="mt-4" OnClick="@OnSubmit">Register</MudButton>
+            <MudForm Model="Input">
+                <MudTextField Label="Email" @bind-Value="@Input.Email" Required="true" />
+                <MudTextField Label="Password" InputType="InputType.Password" @bind-Value="@Input.Password" Required="true" />
+                <MudTextField Label="Confirm Password" InputType="InputType.Password" @bind-Value="@Input.ConfirmPassword" Required="true" />
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="mt-4" OnClick="RegisterUser">Register</MudButton>
                 @if (ShowError)
                 {
                     <MudAlert Severity="Severity.Error" Class="mt-2">@ErrorMessage</MudAlert>
@@ -34,68 +37,72 @@
 </MudContainer>
 
 @code {
-    private InputModel input = new InputModel();
     private bool ShowError = false;
     private string ErrorMessage = "";
 
-    public class InputModel
+    private IEnumerable<IdentityError>? identityErrors;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
+
+
+    public async Task RegisterUser()
     {
-        [Required(ErrorMessage = "Full Name is required")]
-        public string Fullname { get; set; }
+        var user = CreateUser();
 
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email address")]
-        public string Email { get; set; }
+        await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+        var result = await UserManager.CreateAsync(user, Input.Password);
 
-        [Required(ErrorMessage = "Password is required")]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+        if (!result.Succeeded)
+        {
+            identityErrors = result.Errors;
+            return;
+        }
 
-        [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
+        Logger.LogInformation("User created a new account with password.");
 
-        [Required(ErrorMessage = "Phone Number is required")]
-        [Phone(ErrorMessage = "Invalid phone number")]
-        public string PhoneNumber { get; set; }
+        var userId = await UserManager.GetUserIdAsync(user);
+
+
+        await SignInManager.SignInAsync(user, isPersistent: false);
+        RedirectManager.RedirectTo(ReturnUrl);
     }
 
-    private async Task OnSubmit()
+    private ApplicationUser CreateUser()
     {
         try
         {
-            var identity = new ApplicationUser
-                {
-                    UserName = input.Fullname,
-                    Email = input.Email,
-                    FullName = input.Fullname,
-                    PhoneNumber = input.PhoneNumber,
-                    PointNum = 0,
-                    RegistrationDate = DateTime.Now,
-                    IsGuest = false
-                };
-            var result = await UserManager.CreateAsync(identity, input.Password);
-
-            if (result.Succeeded)
-            {
-                ShowError = false;
-                var role = new IdentityRole("Member");
-                var addRoleResults = await RoleManager.CreateAsync(role);
-                var addUserRoleResult = await UserManager.AddToRoleAsync(identity, "Member");
-                await SignInManager.SignInAsync(identity, isPersistent: false);
-
-                NavigationManager.NavigateTo("/");
-            }
-            else
-            {
-                ErrorMessage = result.Errors.FirstOrDefault().Description;
-                ShowError = true;
-            }
+            return Activator.CreateInstance<ApplicationUser>();
         }
-        catch (Exception e)
+        catch
         {
-            ErrorMessage = e.Message;
-            ShowError = true;
+            throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor.");
         }
     }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = "";
+
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; } = "";
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; } = "";
+    }
+
 }
