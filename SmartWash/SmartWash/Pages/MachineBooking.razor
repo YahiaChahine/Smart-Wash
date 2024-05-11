@@ -1,31 +1,32 @@
 ﻿@* @page "/" *@
-@page "/machine/{MachineID:int}"
+@page "/machine/{ObjectHash:int}"
 @using SmartWash.Domain
 @using SmartWash.Application.BookingSystem
-@inject NavigationManager NavigationManager
-@inject IBookingService BookingService
 
 <MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
     <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Style="position: absolute; top:10px;left:10px;" Size="Size.Large" OnClick="GoBack"/>
     <MudCard Style="width: 50%; max-width: 1000px;">
         <MudCardHeader>
             <CardHeaderContent>
-                <MudText Typo="Typo.h4" Class="my-4">Machine @Machine.ID</MudText>
+                <MudText Typo="Typo.h4" Class="my-4">Machine @Booking.Machine.ID</MudText>
             </CardHeaderContent>
             <CardHeaderActions>
-                <MudIcon Icon="@(Machine.Type == MachineType.WashingMachine ? Icons.Material.Filled.LocalLaundryService : Icons.Material.Filled.DryCleaning)"
+                    <MudIcon Icon="@(Booking.Machine.Type == MachineType.WashingMachine ? Icons.Material.Filled.LocalLaundryService : Icons.Material.Filled.DryCleaning)"
                          Size="Size.Large" Style="margin: 1rem;" Color="Color.Primary"/>
             </CardHeaderActions>
         </MudCardHeader>
         <MudCardContent>
             <MudStack Spacing="4">
-                <MudText Typo="Typo.body1">Type: @Machine.Type</MudText>
-                <MudSelect T="int" Variant="Variant.Filled" Label="Cycles" @bind-Value="Cycles">
-                    <MudSelectItem Value="1">1 Cycle</MudSelectItem>
-                    <MudSelectItem Value="2">2 Cycles</MudSelectItem>
-                </MudSelect>
-                <MudAlert Severity="Severity.Info">Each cycle takes 50 minutes</MudAlert>
+                <MudText Typo="Typo.body1">Type: @Booking.Machine.Type</MudText>
+                <MudText Typo="Typo.body1">Cycles: @Booking.CycleNum</MudText>
+                <MudText Typo="Typo.body1">Date: @Booking.StartTime.ToString()</MudText>
             </MudStack>
+            
+            <MudDivider/>
+            
+            
+            <MudText Typo="Typo.h6">Total</MudText>
+            <MudText Typo="Typo.h5">Rs</MudText>
         </MudCardContent>
         <MudCardActions Class="d-flex align-center justify-center">
             <MudButton Size="Size.Large" Color="Color.Primary" Variant="Variant.Filled" Class="px-10" OnClick="Book">Book</MudButton>
@@ -33,26 +34,3 @@
     </MudCard>
 </MudContainer>
 @*//TODO: Place payment stuff in this page*@
-@code
-    {
-    [Parameter]
-    public int MachineID { get; set; }
-
-    private int Cycles { get; set; } = 1;
-
-    private Machine Machine { get; set; } = new Machine()
-    {
-        ID = 2,
-        Type = MachineType.WashingMachine,
-    };
-
-    private void GoBack()
-    {
-        NavigationManager.NavigateTo("/browse");
-    }
-
-    private void Book()
-    {
-        
-    }
-}
