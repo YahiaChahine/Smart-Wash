@@ -43,29 +43,22 @@
 
  @code {
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
-    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; }
+    
+    [Parameter] public ApplicationUser? User { get; set; }
 
     private CreditCard CreditCard { get; set; } = new();
     private string _expiryDate;
     private bool _processing;
-    private bool _isAuthenticated;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthStateTask;
-        _isAuthenticated = authState.User.Identity.IsAuthenticated;
-
-        //if (_isAuthenticated)
-            //CreditCard.UserId = int.Parse(authState.User.Identity.Name);
-    }
 
     private async Task AddPaymentMethod()
     {
         CreditCard.ExpirationMonth = int.Parse(_expiryDate.Substring(0, 2));
         CreditCard.ExpirationYear = int.Parse(_expiryDate.Substring(3, 2));
 
-        if (_isAuthenticated)
+        if (User is not null)
         {
+            CreditCard.UserId = User.Id;
+
             _processing = true;
             await CreditCardRepository.AddAsync(CreditCard);  
             _processing = false;
