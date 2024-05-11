@@ -12,6 +12,7 @@ using SmartWash.Domain.Entities;
 using Stripe;
 using SmartWash.Infrastructure.Stripe;
 using SmartWash.Domain.Interfaces;
+using SmartWash.WebUI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,8 @@ builder.Services.AddMudServices();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddDomain();
+
+builder.Services.AddScoped<StateContainer>(); // Stores the state of the application
 
 //Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
