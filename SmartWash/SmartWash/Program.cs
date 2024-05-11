@@ -37,7 +37,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DataContext>();
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -47,6 +46,17 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+else
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var dbcontext = services.GetRequiredService<DataContext>();
+        DataInitializer.Initialize(dbcontext);
+    }
+}
+
+app.UseAuthentication();
 
 app.UseHttpsRedirection();
 

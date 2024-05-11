@@ -10,7 +10,7 @@ using System.Data.Entity;
 
 namespace SmartWash.Application.FeedbackSystem
 {
-	public class FeedbackService
+	public class FeedbackService : IFeedbackService
 	{
 		private readonly IFeedbackRepository _feedbackRepository;
 		private readonly UserManager<Admin> _adminManager;
@@ -20,22 +20,26 @@ namespace SmartWash.Application.FeedbackSystem
 			_feedbackRepository = feedbackRepository;
 			_adminManager = adminManager;
 		}
-		public async Task SubmitFeedbackAsync(Feedback feedback)
+		public async Task<Feedback> SubmitFeedbackAsync(Feedback feedback)
 		{
 			// Validate feedback data if necessary
 			await _feedbackRepository.AddAsync(feedback);
 
 			// Notify all admins about the new feedback
 			await NotifyAdminsAsync(feedback);
+
+			return feedback;
 		}
 
-		private async Task NotifyAdminsAsync(Feedback feedback)
+		public async Task<Feedback> NotifyAdminsAsync(Feedback feedback)
 		{
 			var admins = await _adminManager.Users.ToListAsync(); // Assuming you have a method to fetch all admin users
 			foreach (var admin in admins)
 			{
 				admin.Notifications.Add($"New feedback from user {feedback.User.UserName}");
 			}
+
+			return feedback;
 		}
 	}
 }

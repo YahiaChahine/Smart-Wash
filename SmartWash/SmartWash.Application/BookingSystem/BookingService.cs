@@ -8,7 +8,7 @@ using SmartWash.Domain.Interfaces;
 
 namespace SmartWash.Application.BookingSystem
 {
-    public class BookingService
+    public class BookingService : IBookingService
     {
         private readonly IBookingRepository _bookingRepository;
 

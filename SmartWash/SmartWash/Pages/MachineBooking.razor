@@ -1,7 +1,9 @@
 ﻿@* @page "/" *@
 @page "/machine/{MachineID:int}"
 @using SmartWash.Domain
+@using SmartWash.Application.BookingSystem
 @inject NavigationManager NavigationManager
+@inject IBookingService BookingService
 
 <MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
     <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Style="position: absolute; top:10px;left:10px;" Size="Size.Large" OnClick="GoBack"/>
@@ -30,8 +32,9 @@
         </MudCardActions>
     </MudCard>
 </MudContainer>
+@*//TODO: Place payment stuff in this page*@
 @code
-{
+    {
     [Parameter]
     public int MachineID { get; set; }
 
@@ -50,6 +53,6 @@
 
     private void Book()
     {
-        // Book the machine
+        
     }
 }

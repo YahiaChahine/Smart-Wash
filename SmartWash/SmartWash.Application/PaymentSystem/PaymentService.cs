@@ -9,7 +9,7 @@ using Stripe;
 
 namespace SmartWash.Application.PaymentSystem
 {
-	public class PaymentService
+	public class PaymentService : IPaymentService
 	{
 		private readonly IStripeAdapter _stripeAdapter;
 

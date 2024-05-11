@@ -2,7 +2,9 @@
 @page "/browse"
 @page "/browse/{Type}"
 @inject NavigationManager NavigationManager
+@inject IMachineService MachineService
 @using SmartWash.Domain
+@using SmartWash.Application.MachineSystem
 
 <MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False" Style="margin-top: -2rem;">
     <MudStack Row="true" Style="width: 100%;" AlignItems="AlignItems.Center" Justify="Justify.SpaceAround">
@@ -10,40 +12,53 @@
             <MudText Typo="Typo.h4" Align="Align.Left" Style="width:100%;">Choose a date and time</MudText>
             <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="5">
                 <div style="width: fit-content;">
-                    <MudDatePicker @bind-Date="@SelectedDate" Label="Date" PickerVariant="PickerVariant.Static" Orientation="Orientation.Landscape"/>
+                    <MudDatePicker Date="@SelectedDate" DateChanged="async (d) => OnDateChoose(d)" Label="Date" PickerVariant="PickerVariant.Static" Orientation="Orientation.Landscape"/>
                 </div>
                 <MudButtonGroup Variant="Variant.Filled" DisableElevation="true" VerticalAlign="true" OverrideStyles="false">
                     @for (var time = Constants.OpeningTime; time < Constants.ClosingTime; time = time.Add(Constants.SlotDuration))
                     {
                         var t = time;
                         <MudButton Variant="Variant.Filled" Class="py-2" Color="time == SelectedTime ? Color.Primary : Color.Default"
-                                   @onclick="() => OnTimeChoose(t)">@t.ToString("hh:mm tt")</MudButton>
+                                   @onclick="async () => await OnTimeChoose(t)">@((new DateTime() + t).ToString("hh:mm tt"))</MudButton>
                     }
                 </MudButtonGroup>
             </MudStack>
         </MudContainer>
 
         <MudPaper Width="50%" Height="60vh" MaxWidth="500px" Class="scroll-container">
-            @for(var i = 0; i < AvailableMachines.Count; i++)
+            @if(AvailableMachines == null)
             {
-                var machine = AvailableMachines[i];
-                <MudCard Class="machine-card cursor-pointer" @onclick="@(() => OnMachineClick(machine))" Outlined="true" Elevation="0">
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h5">Machine @machine.ID</MudText>
-                        </CardHeaderContent>
-                        <CardHeaderActions>
-                            <MudIcon Icon="@(machine.Type == MachineType.WashingMachine ? Icons.Material.Filled.LocalLaundryService : Icons.Material.Filled.DryCleaning)" Size="Size.Large" Color="Color.Primary"/>
-                        </CardHeaderActions>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudText Typo="Typo.body1">Type: @machine.Type</MudText>
-                    </MudCardContent>
-                </MudCard>
+                <MudProgressCircular Size="Size.Large" Color="Color.Primary"/>
             }
+            else if(!AvailableMachines.Any())
+            {
+                <MudText Typo="Typo.h5" Align="Align.Center">No machines available</MudText>
+            }
+            else
+            {
+                @foreach (var machine in AvailableMachines)
+                {
+                    <MudCard Class="machine-card cursor-pointer" @onclick="@(() => OnMachineClick(machine))" Outlined="true" Elevation="0">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h5">Machine @machine.ID</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIcon Icon="@(machine.Type == MachineType.WashingMachine ? Icons.Material.Filled.LocalLaundryService : Icons.Material.Filled.DryCleaning)" Size="Size.Large" Color="Color.Primary"/>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudText Typo="Typo.body1">Type: @machine.Type</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                }
+            }
+
         </MudPaper>
     </MudStack>
 </MudContainer>
+
+@*// TODO: Ask for cycle number here so that the user can book the machine for a certain number of cycles*@
 
 @code
 {
@@ -51,35 +66,41 @@
     public string Type { get; set; } // TODO: Make it so that the user can choose between washing and drying machines
 
     private DateTime? SelectedDate { get; set; } = DateTime.Today;
-    private TimeOnly? SelectedTime { get; set; } = Constants.OpeningTime;
+    private TimeSpan? SelectedTime { get; set; } = Constants.OpeningTime;
+    private int Cycles { get; set; } = 1;
 
-    private List<Machine> AvailableMachines { get; set; } = new List<Machine>();
+    private IEnumerable<Machine>? AvailableMachines { get; set; }
 
-protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        AvailableMachines = new List<Machine>
-        {
-            new() { ID = 1, Type = MachineType.WashingMachine,  },
-            new() { ID = 2, Type = MachineType.WashingMachine,  },
-            new() { ID = 3, Type = MachineType.WashingMachine,  },
-            new() { ID = 4, Type = MachineType.DryingMachine,  },
-            new() { ID = 5, Type = MachineType.WashingMachine,  },
-            new() { ID = 6, Type = MachineType.WashingMachine,  },
-            new() { ID = 7, Type = MachineType.WashingMachine,  },
-            new() { ID = 8, Type = MachineType.WashingMachine,  },
-            new() { ID = 9, Type = MachineType.WashingMachine, },
-            new() { ID = 10, Type = MachineType.WashingMachine, },
-        };
+        await UpdateMachines();
     }
 
-    private void OnTimeChoose(TimeOnly time)
+    private async Task OnTimeChoose(TimeSpan time)
     {
         SelectedTime = time;
+
+        await UpdateMachines();
     }
 
-private void OnMachineClick(Machine machine)
+    private async Task OnDateChoose(DateTime? date)
+    {
+        SelectedDate = date;
+
+        await UpdateMachines();
+    }
+
+    private void OnMachineClick(Machine machine)
     {
         NavigationManager.NavigateTo($"/machine/{machine.ID}");
+    }
+
+    private async Task UpdateMachines()
+    {
+        var datetime = SelectedDate.Value.Add(SelectedTime.Value);
+        AvailableMachines = await MachineService.GetAvailableMachinesAsync(datetime, datetime.Add(Constants.SlotDuration * Cycles));
+
+        StateHasChanged();
     }
 
 }

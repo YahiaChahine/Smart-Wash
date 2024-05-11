@@ -9,7 +9,7 @@ namespace SmartWash.Domain.Entities
         public DateTime ?StartTime { get; set; }
 
         public DateTime? EndTime => StartTime.HasValue ? 
-            StartTime.Value.AddHours(Constants.CycleDurationMinutes * CycleNum) : null;
+            StartTime.Value.AddMinutes(Constants.CycleDurationMinutes * CycleNum) : null;
 
         public int MachineId { get; set; }
         public Machine Machine { get; set; }
