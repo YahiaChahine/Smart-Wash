@@ -5,7 +5,7 @@
 
 <MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
     <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Style="position: absolute; top:10px;left:10px;" Size="Size.Large" OnClick="GoBack"/>
-    <MudCard Style="width: 50%; max-width: 1000px;">
+    <MudCard Style="width: 30%; max-width: 1000px;margin-top: -4em;">
         <MudCardHeader>
             <CardHeaderContent>
                 <MudText Typo="Typo.h4" Class="my-4">Machine @Booking.Machine.ID</MudText>
@@ -16,17 +16,44 @@
             </CardHeaderActions>
         </MudCardHeader>
         <MudCardContent>
-            <MudStack Spacing="4">
-                <MudText Typo="Typo.body1">Type: @Booking.Machine.Type</MudText>
-                <MudText Typo="Typo.body1">Cycles: @Booking.CycleNum</MudText>
-                <MudText Typo="Typo.body1">Date: @Booking.StartTime.ToString()</MudText>
+            <MudStack Spacing="1" Style="margin-bottom: 2rem;">
+                <MudText Typo="Typo.body1" Color="Color.Tertiary">@Booking.Machine.Type</MudText>
+                    <MudText Typo="Typo.body1" Color="Color.Tertiary">@Booking.CycleNum Cycle(s)</MudText>
+                    <MudText Typo="Typo.body1" Color="Color.Tertiary">@Booking.StartTime.ToString()</MudText>
             </MudStack>
             
-            <MudDivider/>
+            <MudStack AlignItems="AlignItems.Center" Style="margin-bottom: 2rem;">
+                <MudStack Row="true" Justify="Justify.SpaceBetween" Class="fullwidth mb-3">
+                    <MudText Typo="Typo.h6">Payment</MudText>
+                    <MudButton Color="Color.Secondary" Variant="_coinPayment ? Variant.Filled : Variant.Outlined"
+                               OnClick="() => { _coinPayment = !_coinPayment; }" StartIcon="@(_coinPayment ? Icons.Material.Filled.Check : "")">Coin Payment</MudButton>
+                </MudStack>
+                @if (!_coinPayment)
+                {
+                    <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" DisableElevation="true">
+                        @if (IsPaymentMethodSet)
+                        {
+                            <MudButton>Card 1234 **** **** ****</MudButton>
+                            <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown" Style="align-self: auto;">
+                                <MudMenuItem>Modify</MudMenuItem>
+                                <MudMenuItem>Remove</MudMenuItem>
+                            </MudMenu>
+                        }
+                        else
+                        {
+                            <MudButton EndIcon="@Icons.Material.Filled.Add" OnClick="AddPaymentMethod">Add Payment Method</MudButton>
+                        }
+                    </MudButtonGroup>
+                }
+                
+                <MudAutocomplete FullWidth="true" T="string" Label="Promotion Code"  @bind-Value="_promotionCode" SearchFunc="@GetPromotionCodes" Variant="Variant.Outlined" ShowProgressIndicator="true" ProgressIndicatorColor="Color.Primary" CoerceText="false"/>
+
+            </MudStack>
             
-            
-            <MudText Typo="Typo.h6">Total</MudText>
-            <MudText Typo="Typo.h5">Rs</MudText>
+            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                <MudText Typo="Typo.h6">Total</MudText>
+                <MudText Typo="Typo.h5">@_amount AED</MudText>
+            </MudStack>
         </MudCardContent>
         <MudCardActions Class="d-flex align-center justify-center">
             <MudButton Size="Size.Large" Color="Color.Primary" Variant="Variant.Filled" Class="px-10" OnClick="Book">Book</MudButton>

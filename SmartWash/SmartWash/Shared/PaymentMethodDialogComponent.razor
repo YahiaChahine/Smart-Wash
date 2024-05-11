@@ -1,0 +1,80 @@
+﻿@using SmartWash.Domain.Interfaces
+
+@inject ICreditCardRepository CreditCardRepository
+
+<MudDialog>
+    <DialogContent>
+        <MudGrid Class="mb-8">
+            <MudItem xs="12">
+                <MudTextField Label="Card Holder" @bind-Value="CreditCard.CardHolderName"  Variant="@Variant.Text" />        
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField Mask="@(new PatternMask("0000 0000 0000 0000"))" Label="Credit Card Number"
+                              @bind-Value="CreditCard.CardNumber" Variant="@Variant.Text" Clearable/>
+            </MudItem>
+            <MudItem xs="4">
+                <MudTextField Mask="@(new DateMask("MM/YY", 'Y', 'M'))" Label="Expires"
+                              @bind-Value="_expiryDate" Variant="@Variant.Text"/>
+            </MudItem>
+            <MudItem xs="4">
+                <MudTextField Mask="@(new PatternMask("000"))" Label="CVC"
+                              @bind-Value="CreditCard.CVV" Variant="@Variant.Text"/>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudStack Row="true" Justify="Justify.SpaceBetween" Class="fullwidth mx-6">
+            <MudButton Color="Color.Primary" OnClick="Close" Size="Size.Large">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="AddPaymentMethod" 
+                       Size="Size.Large" Class="px-10">   
+                @if (_processing)
+               {
+                   <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                   <MudText Class="ms-2">Processing</MudText>
+               }
+               else
+               {
+                   <MudText>Add</MudText>
+               }
+                </MudButton>
+        </MudStack>
+    </DialogActions>
+</MudDialog>
+
+ @code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; }
+
+    private CreditCard CreditCard { get; set; } = new();
+    private string _expiryDate;
+    private bool _processing;
+    private bool _isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateTask;
+        _isAuthenticated = authState.User.Identity.IsAuthenticated;
+
+        if (_isAuthenticated)
+            CreditCard.UserId = int.Parse(authState.User.Identity.Name);
+    }
+
+    private async Task AddPaymentMethod()
+    {
+        CreditCard.ExpirationMonth = int.Parse(_expiryDate.Substring(0, 2));
+        CreditCard.ExpirationYear = int.Parse(_expiryDate.Substring(3, 2));
+
+        if (_isAuthenticated)
+        {
+            _processing = true;
+            await CreditCardRepository.AddAsync(CreditCard);  
+            _processing = false;
+        }
+
+        MudDialog.Close(DialogResult.Ok(CreditCard));
+    }
+
+    void Close() => MudDialog.Close(DialogResult.Cancel());
+
+
+}

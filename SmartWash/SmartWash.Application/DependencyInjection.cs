@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using SmartWash.Application.BookingSystem;
+using SmartWash.Application.CookieSystem;
 using SmartWash.Application.FeedbackSystem;
 using SmartWash.Application.MachineSystem;
 using SmartWash.Application.PaymentSystem;
@@ -17,8 +18,10 @@ namespace SmartWash.Application
         {
             services.AddScoped<IBookingService, BookingService>();
             //services.AddScoped<IFeedbackService, FeedbackService>();
-            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IPaymentService, DemoPaymentService>();
             services.AddScoped<IMachineService, MachineService>();
+
+            //services.AddScoped<ICookieService, CookieService>();
 
             return services;
         }
