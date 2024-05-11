@@ -34,7 +34,7 @@ namespace SmartWash.WebUI.Pages
 
             if (authState.User.Identity.IsAuthenticated)
             {
-                CreditCardRepository.GetByUserAsync((int)authState.User.Identity.Name);
+                //CreditCardRepository.GetByUserAsync((int)authState.User.Identity.Name);
             }
             //IsPaymentMethodSet = !string.IsNullOrEmpty(Booking.User.StripeCustomerId);
         }
@@ -48,7 +48,7 @@ namespace SmartWash.WebUI.Pages
         {
             var result = await DialogService.Show<PaymentMethodDialogComponent>("Add Payment Method", new DialogOptions { MaxWidth = MaxWidth.Small }).Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
             {
                 //Booking.User.StripeCustomerId = result.Data.ToString();
                 //await StateContainer.UpdateUser(Booking.User);

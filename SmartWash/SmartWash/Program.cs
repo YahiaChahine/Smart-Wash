@@ -13,12 +13,15 @@ using Stripe;
 using SmartWash.Infrastructure.Stripe;
 using SmartWash.Domain.Interfaces;
 using SmartWash.WebUI;
+using Microsoft.AspNetCore.Components.Authorization;
+using SmartWash.WebUI.Account;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
 builder.Services.AddMudServices();
 
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -27,52 +30,72 @@ builder.Services.AddDomain();
 
 builder.Services.AddScoped<StateContainer>(); // Stores the state of the application
 
-//Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-{
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequiredLength = 5;
-    options.SignIn.RequireConfirmedEmail = true;
-})
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<DataContext>();
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<IdentityUserAccessor>();
+builder.Services.AddScoped<IdentityRedirectManager>();
+builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-builder.Services.AddScoped<SignInManager<ApplicationUser>>();
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = IdentityConstants.ApplicationScheme;
+        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    })
+    .AddIdentityCookies();
 
-builder.Services.AddIdentityCore<Admin>().AddEntityFrameworkStores<DataContext>();
-builder.Services.AddIdentityCore<ApplicationUser>().AddEntityFrameworkStores<DataContext>();
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<DataContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+////Identity
+//builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+//{
+//    options.Password.RequireDigit = false;
+//    options.Password.RequireLowercase = false;
+//    options.Password.RequireNonAlphanumeric = false;
+//    options.Password.RequireUppercase = false;
+//    options.Password.RequiredLength = 5;
+//    options.SignIn.RequireConfirmedEmail = true;
+//})
+//    .AddRoles<IdentityRole>()
+//    .AddEntityFrameworkStores<DataContext>();
+//builder.Services.AddScoped<SignInManager<ApplicationUser>>();
+//builder.Services.AddIdentityCore<Admin>().AddEntityFrameworkStores<DataContext>();
+//builder.Services.AddIdentityCore<ApplicationUser>().AddEntityFrameworkStores<DataContext>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    //using (var scope = app.Services.CreateScope())
+    //{
+    //    var services = scope.ServiceProvider;
+    //    var dbcontext = services.GetRequiredService<DataContext>();
+    //    DataInitializer.Initialize(dbcontext);
+    //}
+
+    app.UseMigrationsEndPoint();
+}
+else
 {
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-else
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var services = scope.ServiceProvider;
-        var dbcontext = services.GetRequiredService<DataContext>();
-        DataInitializer.Initialize(dbcontext);
-    }
-}
-
-app.UseAuthentication();
 
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+app.UseAntiforgery();
 
-app.UseRouting();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+app.MapAdditionalIdentityEndpoints();
 
 app.Run();

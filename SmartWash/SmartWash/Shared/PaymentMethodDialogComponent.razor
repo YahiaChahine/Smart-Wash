@@ -55,8 +55,8 @@
         var authState = await AuthStateTask;
         _isAuthenticated = authState.User.Identity.IsAuthenticated;
 
-        if (_isAuthenticated)
-            CreditCard.UserId = int.Parse(authState.User.Identity.Name);
+        //if (_isAuthenticated)
+            //CreditCard.UserId = int.Parse(authState.User.Identity.Name);
     }
 
     private async Task AddPaymentMethod()

@@ -24,9 +24,14 @@ namespace SmartWash.Infrastructure
             services.AddScoped<IStripeAdapter, StripeAdapter>();
 
             //DataAccess
-            var cs = config.GetConnectionString("LocalServer");
-            services.AddDbContextFactory<DataContext>(options => options.UseSqlServer(cs));
-            services.AddDbContext<DataContext>(options => options.UseSqlServer(cs));
+            //var cs = config.GetConnectionString("LocalServer");
+            //services.AddDbContextFactory<DataContext>(options => options.UseSqlServer(cs));
+            //services.AddDbContext<DataContext>(options => options.UseSqlServer(cs));
+
+            var connectionString = config.GetConnectionString("LocalServer") ?? throw new InvalidOperationException("Connection string 'LocalServer' not found.");
+            services.AddDbContext<DataContext>(options =>
+                options.UseSqlServer(connectionString));
+
 
             //Repositories
             services.AddScoped<IFeedbackRepository, FeedbackRepository>();
