@@ -59,7 +59,7 @@ namespace SmartWash.Infrastructure.Repositories
 			await _context.SaveChangesAsync();
 		}
 
-		public async Task<IEnumerable<Reply>> GetByAdminAsync(int adminID)
+		public async Task<IEnumerable<Reply>> GetByAdminAsync(string adminID)
 		{
 			return await _context.Replies
 				.Where(r => r.AdminId == adminID)

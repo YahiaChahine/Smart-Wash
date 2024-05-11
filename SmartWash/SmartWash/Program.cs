@@ -28,7 +28,7 @@ builder.Services.AddDomain();
 builder.Services.AddScoped<StateContainer>(); // Stores the state of the application
 
 //Identity
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
@@ -39,6 +39,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DataContext>();
+
+builder.Services.AddScoped<SignInManager<ApplicationUser>>();
+
+builder.Services.AddIdentityCore<Admin>().AddEntityFrameworkStores<DataContext>();
+builder.Services.AddIdentityCore<ApplicationUser>().AddEntityFrameworkStores<DataContext>();
 
 var app = builder.Build();
 

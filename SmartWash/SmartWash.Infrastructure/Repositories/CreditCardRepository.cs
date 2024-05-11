@@ -53,7 +53,7 @@ namespace SmartWash.Infrastructure.Repositories
 		}
 
 		//get by user id
-		public async Task<IEnumerable<CreditCard>> GetByUserAsync(int userID)
+		public async Task<IEnumerable<CreditCard>> GetByUserAsync(string userID)
 		{
 			return await _context.CreditCards
 			.Where(f => f.UserId == userID)

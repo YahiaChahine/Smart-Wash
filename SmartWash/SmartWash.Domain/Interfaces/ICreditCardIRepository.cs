@@ -13,7 +13,7 @@ namespace SmartWash.Domain.Interfaces
 		Task<CreditCard> AddAsync(CreditCard creditcard);
 		Task UpdateAsync(CreditCard creditcard);
 		Task DeleteAsync(int id);
-		Task<IEnumerable<CreditCard>> GetByUserAsync(int userID);
+		Task<IEnumerable<CreditCard>> GetByUserAsync(string userID);
 		Task<IEnumerable<CreditCard>> GetAllAsync();
 	}
 }

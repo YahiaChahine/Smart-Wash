@@ -46,7 +46,7 @@ namespace SmartWash.Infrastructure.Repositories
 			return await _context.Feedbacks.FindAsync(id);
 		}
 
-		public async Task<IEnumerable<Feedback>> GetByUserAsync(int userID)
+		public async Task<IEnumerable<Feedback>> GetByUserAsync(string userID)
 		{
 			return await _context.Feedbacks
 				.Where(f => f.UserId == userID)

@@ -13,7 +13,7 @@ namespace SmartWash.Domain.Interfaces
 		Task<Reply> AddAsync(Reply reply);
 		Task UpdateAsync(Reply reply);
 		Task DeleteAsync(int id);
-		Task<IEnumerable<Reply>> GetByAdminAsync(int adminID);
+		Task<IEnumerable<Reply>> GetByAdminAsync(string adminID);
 		Task<IEnumerable<Reply>> GetByFeedbackAsync(int feedbackID);
 		Task<IEnumerable<Reply>> GetAllAsync();
 	}
