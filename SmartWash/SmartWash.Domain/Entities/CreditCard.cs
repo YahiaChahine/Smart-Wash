@@ -10,7 +10,7 @@ namespace SmartWash.Domain.Entities
         public int ExpirationYear { get; set; }
         public string CVV { get; set; }
         public string CardHolderName { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public ApplicationUser User { get; set; }
     }
 }

@@ -12,8 +12,8 @@ using SmartWash.Infrastructure.Data;
 namespace SmartWash.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240507232440_Initial")]
-    partial class Initial
+    [Migration("20240511145211_initial_again")]
+    partial class initial_again
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -158,59 +158,7 @@ namespace SmartWash.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("SmartWashProject.Entities.Admin", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Admins");
-                });
-
-            modelBuilder.Entity("SmartWashProject.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("SmartWash.Domain.Entities.Account", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -222,12 +170,21 @@ namespace SmartWash.Infrastructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -251,12 +208,6 @@ namespace SmartWash.Infrastructure.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<int>("PointNum")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("RegistrationDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -279,9 +230,13 @@ namespace SmartWash.Infrastructure.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Account");
+
+                    b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("SmartWashProject.Entities.Booking", b =>
+            modelBuilder.Entity("SmartWash.Domain.Entities.Booking", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -298,28 +253,69 @@ namespace SmartWash.Infrastructure.Migrations
                     b.Property<int>("CycleNum")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
 
                     b.Property<int>("MachineId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("StartTime")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ID");
 
                     b.HasIndex("MachineId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Bookings");
                 });
 
-            modelBuilder.Entity("SmartWashProject.Entities.Feedback", b =>
+            modelBuilder.Entity("SmartWash.Domain.Entities.CreditCard", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("CVV")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CardHolderName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CardNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ExpirationMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExpirationYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CreditCards");
+                });
+
+            modelBuilder.Entity("SmartWash.Domain.Entities.Feedback", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -336,20 +332,18 @@ namespace SmartWash.Infrastructure.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Feedbacks");
                 });
 
-            modelBuilder.Entity("SmartWashProject.Entities.Machine", b =>
+            modelBuilder.Entity("SmartWash.Domain.Entities.Machine", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -368,7 +362,7 @@ namespace SmartWash.Infrastructure.Migrations
                     b.ToTable("Machines");
                 });
 
-            modelBuilder.Entity("SmartWashProject.Entities.Offer", b =>
+            modelBuilder.Entity("SmartWash.Domain.Entities.Offer", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -387,7 +381,7 @@ namespace SmartWash.Infrastructure.Migrations
                     b.ToTable("Offers");
                 });
 
-            modelBuilder.Entity("SmartWashProject.Entities.Reply", b =>
+            modelBuilder.Entity("SmartWash.Domain.Entities.Reply", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -395,10 +389,7 @@ namespace SmartWash.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<int>("AdminId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("AdminId1")
+                    b.Property<string>("AdminId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -413,11 +404,36 @@ namespace SmartWash.Infrastructure.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AdminId1");
-
-                    b.HasIndex("FeedbackId");
+                    b.HasIndex("AdminId");
 
                     b.ToTable("Replies");
+                });
+
+            modelBuilder.Entity("SmartWash.Domain.Entities.Admin", b =>
+                {
+                    b.HasBaseType("SmartWash.Domain.Entities.Account");
+
+                    b.Property<string>("Notifications")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("Admin");
+                });
+
+            modelBuilder.Entity("SmartWash.Domain.Entities.ApplicationUser", b =>
+                {
+                    b.HasBaseType("SmartWash.Domain.Entities.Account");
+
+                    b.Property<bool>("IsGuest")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PointNum")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -431,7 +447,7 @@ namespace SmartWash.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("SmartWashProject.Entities.ApplicationUser", null)
+                    b.HasOne("SmartWash.Domain.Entities.Account", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -440,7 +456,7 @@ namespace SmartWash.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("SmartWashProject.Entities.ApplicationUser", null)
+                    b.HasOne("SmartWash.Domain.Entities.Account", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -455,7 +471,7 @@ namespace SmartWash.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SmartWashProject.Entities.ApplicationUser", null)
+                    b.HasOne("SmartWash.Domain.Entities.Account", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -464,64 +480,71 @@ namespace SmartWash.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("SmartWashProject.Entities.ApplicationUser", null)
+                    b.HasOne("SmartWash.Domain.Entities.Account", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SmartWashProject.Entities.Booking", b =>
+            modelBuilder.Entity("SmartWash.Domain.Entities.Booking", b =>
                 {
-                    b.HasOne("SmartWashProject.Entities.Machine", "Machine")
+                    b.HasOne("SmartWash.Domain.Entities.Machine", "Machine")
                         .WithMany()
                         .HasForeignKey("MachineId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SmartWashProject.Entities.ApplicationUser", "User")
+                    b.HasOne("SmartWash.Domain.Entities.ApplicationUser", "User")
                         .WithMany("Bookings")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Machine");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SmartWashProject.Entities.Feedback", b =>
+            modelBuilder.Entity("SmartWash.Domain.Entities.CreditCard", b =>
                 {
-                    b.HasOne("SmartWashProject.Entities.ApplicationUser", "User")
+                    b.HasOne("SmartWash.Domain.Entities.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SmartWashProject.Entities.Reply", b =>
+            modelBuilder.Entity("SmartWash.Domain.Entities.Feedback", b =>
                 {
-                    b.HasOne("SmartWashProject.Entities.Admin", "Admin")
-                        .WithMany("Replies")
-                        .HasForeignKey("AdminId1")
+                    b.HasOne("SmartWash.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SmartWashProject.Entities.Feedback", "Feedback")
-                        .WithMany()
-                        .HasForeignKey("FeedbackId")
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SmartWash.Domain.Entities.Reply", b =>
+                {
+                    b.HasOne("SmartWash.Domain.Entities.Admin", "Admin")
+                        .WithMany("Replies")
+                        .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Admin");
-
-                    b.Navigation("Feedback");
                 });
 
-            modelBuilder.Entity("SmartWashProject.Entities.Admin", b =>
+            modelBuilder.Entity("SmartWash.Domain.Entities.Admin", b =>
                 {
                     b.Navigation("Replies");
                 });
 
-            modelBuilder.Entity("SmartWashProject.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("SmartWash.Domain.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("Bookings");
                 });

@@ -13,7 +13,6 @@ namespace SmartWash.Domain.Entities
 
         public int MachineId { get; set; }
         public Machine Machine { get; set; }
-        public int UserId { get; set; }
         public ApplicationUser User { get; set; }
         public int CycleNum { get; set; }
         public string ?AccessPassword { get; set; }
@@ -26,7 +25,6 @@ namespace SmartWash.Domain.Entities
             {
                 throw new InvalidOperationException("Booking has already started");
             }
-
             IsCancelled = true;
         }
     }

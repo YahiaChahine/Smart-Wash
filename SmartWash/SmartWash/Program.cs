@@ -9,9 +9,6 @@ using SmartWash.Infrastructure;
 using SmartWash.Infrastructure.Repositories;
 using SmartWash.Infrastructure.Data;
 using SmartWash.Domain.Entities;
-using Stripe;
-using SmartWash.Infrastructure.Stripe;
-using SmartWash.Domain.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +22,7 @@ builder.Services.AddApplication();
 builder.Services.AddDomain();
 
 //Identity
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
@@ -36,6 +33,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DataContext>();
+
+builder.Services.AddScoped<SignInManager<ApplicationUser>>();
+
+builder.Services.AddIdentityCore<Admin>().AddEntityFrameworkStores<DataContext>();
+builder.Services.AddIdentityCore<ApplicationUser>().AddEntityFrameworkStores<DataContext>();
 
 var app = builder.Build();
 

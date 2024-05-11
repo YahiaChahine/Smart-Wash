@@ -43,8 +43,8 @@ namespace SmartWash.Infrastructure.Data
 
                 var users = new ApplicationUser[]
                 {
-                    new() { Id = "1", UserName = "admin", PasswordHash = hasher.HashPassword(null, "admin") },
-                    new() { Id = "2", UserName = "user", PasswordHash = hasher.HashPassword(null, "user") },
+                    new() { Id = "1", FullName="Waleed",UserName = "admin", PasswordHash = hasher.HashPassword(null, "admin") },
+                    new() { Id = "2", FullName="Muath",UserName = "user", PasswordHash = hasher.HashPassword(null, "user") },
                 };
 
                 foreach (var u in users)
@@ -60,8 +60,8 @@ namespace SmartWash.Infrastructure.Data
             {
                 var bookings = new Booking[]
                 {
-                    new() {MachineId=16, UserId=2, StartTime=DateTime.Today.AddHours(8), CycleNum = 2},
-                    new() {MachineId=17, UserId=1, StartTime=DateTime.Today.AddHours(13), CycleNum = 1},
+                    //new() {MachineId=1, User = 1, StartTime=DateTime.Today.AddHours(8), CycleNum = 2},
+                    //new() {MachineId=2, UserId="1", StartTime=DateTime.Today.AddHours(13), CycleNum = 1},
                 };
 
                 foreach (var booking in bookings)
