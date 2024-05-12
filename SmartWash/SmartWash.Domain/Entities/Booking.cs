@@ -17,6 +17,7 @@ namespace SmartWash.Domain.Entities
         public ApplicationUser? User { get; set; }
         public int CycleNum { get; set; }
         public string ?AccessPassword { get; set; }
+        public float Amount { get; set; }
         public bool IsPaid { get; set; }
         public bool IsCancelled { get; set; }
 
@@ -27,6 +28,15 @@ namespace SmartWash.Domain.Entities
                 throw new InvalidOperationException("Booking has already started");
             }
             IsCancelled = true;
+        }
+
+        public void GenerateAccessPassword()
+        {
+            if (AccessPassword is not null)
+            {
+                throw new InvalidOperationException("Access password has already been generated");
+            }
+            AccessPassword = new Random().Next(1000, 9999).ToString();
         }
     }
 }

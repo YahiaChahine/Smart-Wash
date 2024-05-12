@@ -20,8 +20,6 @@ namespace SmartWash.WebUI.Pages
 
         private IEnumerable<Machine>? AvailableMachines { get; set; }
 
-        [Inject]
-        private StateContainer StateContainer { get; set; }
 
         protected override async Task OnInitializedAsync()
         {

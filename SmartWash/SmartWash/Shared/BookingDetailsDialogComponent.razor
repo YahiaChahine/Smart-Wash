@@ -1,0 +1,38 @@
+﻿@using SmartWash.Domain.Interfaces
+@using System.ComponentModel.DataAnnotations
+
+<MudDialog Style="width: 30%;">
+    <DialogContent>
+        
+        <MudText Typo="Typo.body1">Machine @Booking?.MachineId</MudText>
+        <MudText Typo="Typo.body1">@Booking?.CycleNum Cycle(s)</MudText>
+        <MudText Typo="Typo.body1">Date: @Booking.StartTime.Value.ToString("dd/MM/yyyy")</MudText>
+        <MudText Typo="Typo.body1">Start Time: @Booking?.StartTime.Value.ToString("hh:mm tt")</MudText>
+        <MudText Typo="Typo.body1">End Time: @Booking?.EndTime.Value.ToString("hh:mm tt")</MudText>
+        <MudText Typo="Typo.body1">Amount: @Booking.Amount AED</MudText>
+        <MudText Typo="Typo.body1">Paid: @Booking.IsPaid</MudText>
+        
+        <MudDivider Class="my-4"/>
+        <MudStack>
+            <MudText Typo="Typo.h5" Align="Align.Center">Access Password</MudText>
+            <MudText Typo="Typo.h4" Align="Align.Center">@Booking.AccessPassword</MudText>
+        </MudStack>
+        <MudDivider Class="my-4"/>
+        <MudAlert Severity="Severity.Info">You will need this to access the machines, you can find this password under "Profile" > "Bookings"</MudAlert>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled"
+                   Size="Size.Large" Class="px-10" OnClick="Close">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public Booking? Booking { get; set; }
+
+    void Close() => MudDialog.Close(DialogResult.Cancel());
+
+}
