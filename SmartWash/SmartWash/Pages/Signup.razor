@@ -120,7 +120,11 @@
         }
 
         var role = new IdentityRole("Member");
-        var addRoleResults = await RoleManager.CreateAsync(role);
+        var roleExists = await RoleManager.FindByNameAsync("Member");
+        if (roleExists == null)
+        {
+            var addRoleResults = await RoleManager.CreateAsync(role);
+        }
         var addUserRoleResult = await UserManager.AddToRoleAsync(user, "Member");
 
         await SignInManager.SignInAsync(user, isPersistent: false);

@@ -3,10 +3,22 @@
 
 <MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
     
-    <div>
-        <MudText Align="Align.Center" Typo="Typo.h1">Smart Wash</MudText>
-        <MudText Align="Align.Center" Typo="Typo.h4" Class="my-10">Your one-stop solution for a clean and quick wash.</MudText>
-    </div>
+    <AuthorizeView Roles="Member">
+
+            <MudText Align="Align.Center" Typo="Typo.h3">Welcome Valued Member !</MudText>
+    </AuthorizeView>
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <MudText Align="Align.Center" Typo="Typo.h3">Welcome Admin</MudText>
+        </Authorized>
+        <NotAuthorized>
+
+            <div>
+                <MudText Align="Align.Center" Typo="Typo.h1">Smart Wash</MudText>
+                <MudText Align="Align.Center" Typo="Typo.h4" Class="my-10">Your one-stop solution for a clean and quick wash.</MudText>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
     
     <MudContainer>
         <MudText Typo="Typo.h5" Class="my-4">Choose a machine type:</MudText>

@@ -7,16 +7,50 @@
 @using SmartWash.WebUI.Account
 @using SmartWash.WebUI.Account.Shared
 
-@inject IUserStore<Account> UserStore
-@inject SignInManager<Account> SignInManager
-@inject UserManager<Account> UserManager
+@inject IUserStore<ApplicationUser> UserStore
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 @inject RoleManager<IdentityRole> RoleManager
 
-
 @layout AccountLayout
-<PageTitle>Admin Sign Up</PageTitle>
+@*
+<MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
+    <MudCard Style="width: 50%; max-width: 1000px;">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h4" Class="my-4">Register</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <EditForm Model="Input" OnValidSubmit="RegisterUser">
+                <DataAnnotationsValidator />
+
+                <MudTextField Label="Full Name" @bind-Value="@Input.FullName" Required="true" />
+                <ValidationMessage For="() => Input.FullName" Class="text-danger" />
+
+                <MudTextField Label="Email" @bind-Value="@Input.Email" Required="true" />
+                <ValidationMessage For="() => Input.Email" Class="text-danger" />
+
+                <MudTextField Label="Password" @bind-Value="@Input.Password" Required="true" />
+                <ValidationMessage For="() => Input.Password" Class="text-danger" />
+
+                <MudTextField Label="Confirm Password" InputType="InputType.Password" @bind-Value="@Input.ConfirmPassword" Required="true" />
+                <ValidationMessage For="() => Input.ConfirmPassword" Class="text-danger" />
+
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="mt-4" ButtonType=ButtonType.Submit>Register</MudButton>
+                @if (ShowError)
+                {
+                    <MudAlert Severity="Severity.Error" Class="mt-2">@ErrorMessage</MudAlert>
+                }
+            </EditForm>
+        </MudCardContent>
+    </MudCard>
+</MudContainer> *@
+
+
+<PageTitle>Sign Up</PageTitle>
 
 <div class="row">
     <div class="fullscreen-section text-font">
@@ -73,6 +107,8 @@
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
         user.FullName = Input.FullName;
+        user.PointNum = 0;
+        user.RegistrationDate = DateTime.Now;
 
         var result = await UserManager.CreateAsync(user, Input.Password);
 
@@ -96,27 +132,27 @@
         NavigationManager.NavigateTo("/");
     }
 
-    private Admin CreateUser()
+    private ApplicationUser CreateUser()
     {
         try
         {
-            return Activator.CreateInstance<Admin>();
+            return Activator.CreateInstance<ApplicationUser>();
         }
         catch
         {
-            throw new InvalidOperationException($"Can't create an instance of '{nameof(Admin)}'. " +
-                $"Ensure that '{nameof(Admin)}' is not an abstract class and has a parameterless constructor.");
+            throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor.");
         }
     }
 
 
-    private IUserEmailStore<Account> GetEmailStore()
+    private IUserEmailStore<ApplicationUser> GetEmailStore()
     {
         if (!UserManager.SupportsUserEmail)
         {
             throw new NotSupportedException("The default UI requires a user store with email support.");
         }
-        return (IUserEmailStore<Account>)UserStore;
+        return (IUserEmailStore<ApplicationUser>)UserStore;
     }
 
     private sealed class InputModel

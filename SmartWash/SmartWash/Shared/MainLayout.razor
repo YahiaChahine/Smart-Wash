@@ -18,7 +18,7 @@
         <MudSpacer/>
             <MudButton Link="/">Home</MudButton>
             <MudButton Link="/about">About</MudButton>
-        <AuthorizeView Roles="Member">
+        <AuthorizeView Roles="Member, Admin">
             <NotAuthorized>
                 <MudButton Link="/Account/Login">Login</MudButton>
                 <MudButton Link="/Account/SignUp">Sign Up</MudButton>
