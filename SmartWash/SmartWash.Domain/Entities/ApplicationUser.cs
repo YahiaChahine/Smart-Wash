@@ -8,5 +8,7 @@ namespace SmartWash.Domain.Entities
         public ICollection<Booking> ?Bookings { get; set; }
         public int PointNum { get; set; }
         public bool IsGuest { get; set; }
+        public ICollection<Reply> Replies { get; set; }
+        public ICollection<string> Notifications { get; set; }
     }
 }

@@ -13,12 +13,15 @@ namespace SmartWash.Application.FeedbackSystem
 	public class FeedbackService : IFeedbackService
 	{
 		private readonly IFeedbackRepository _feedbackRepository;
-		private readonly UserManager<Admin> _adminManager;
+		private readonly IReplyRepository _replyRepository;
+		private readonly UserManager<ApplicationUser> _adminManager;
 
-		public FeedbackService(IFeedbackRepository feedbackRepository, UserManager<Admin> adminManager)
+		public FeedbackService(IFeedbackRepository feedbackRepository, UserManager<ApplicationUser> adminManager,
+			IReplyRepository replyRepository)
 		{
 			_feedbackRepository = feedbackRepository;
 			_adminManager = adminManager;
+			_replyRepository = replyRepository;
 		}
 		public async Task<Feedback> SubmitFeedbackAsync(Feedback feedback)
 		{
@@ -31,12 +34,34 @@ namespace SmartWash.Application.FeedbackSystem
 			return feedback;
 		}
 
+		public async Task<Reply> ReplyToFeedback(Reply reply)
+		{
+			await _replyRepository.AddAsync(reply);
+
+			await NotifyUserAsync(reply);
+			return reply;
+		}
+
+
+        public async Task<Reply> NotifyUserAsync(Reply reply)
+		{
+			var feedback = await _feedbackRepository.GetByIdAsync(reply.FeedbackId);
+			var user = await _adminManager.FindByIdAsync(feedback.UserId);
+			user.Notifications.Add($"New reply from admin {reply.User.UserName}");
+            return reply;
+        }
+
 		public async Task<Feedback> NotifyAdminsAsync(Feedback feedback)
 		{
+
 			var admins = await _adminManager.Users.ToListAsync(); // Assuming you have a method to fetch all admin users
 			foreach (var admin in admins)
 			{
-				admin.Notifications.Add($"New feedback from user {feedback.User.UserName}");
+				var validAdmin = await _adminManager.GetRolesAsync(admin);
+				if (validAdmin.Contains("Admin"))
+				{
+					admin.Notifications.Add($"New feedback from user {feedback.User.UserName}");
+				}
 			}
 
 			return feedback;

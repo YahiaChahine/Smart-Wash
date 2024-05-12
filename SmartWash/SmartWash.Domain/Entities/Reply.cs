@@ -6,8 +6,8 @@ namespace SmartWash.Domain.Entities
     {
         public int ID { get; set; }
         public int FeedbackId { get; set; }
-        public string AdminId { get; set; }
-        public Admin Admin { get; set; }
+        public string UserId { get; set; }
+        public ApplicationUser User { get; set; }
         public string ?Content { get; set; }
         public DateTime ReplyDateTime { get; set; }
     }
