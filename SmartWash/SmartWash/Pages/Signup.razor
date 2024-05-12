@@ -12,6 +12,7 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject RoleManager<IdentityRole> RoleManager
 
 @layout AccountLayout
 @* 
@@ -88,7 +89,7 @@
 
 @code {
     private bool ShowError = false;
-    
+
     private string? ErrorMessage => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
 
 
@@ -117,6 +118,10 @@
             ShowError = true;
             return;
         }
+
+        var role = new IdentityRole("Member");
+        var addRoleResults = await RoleManager.CreateAsync(role);
+        var addUserRoleResult = await UserManager.AddToRoleAsync(user, "Member");
 
         await SignInManager.SignInAsync(user, isPersistent: false);
 

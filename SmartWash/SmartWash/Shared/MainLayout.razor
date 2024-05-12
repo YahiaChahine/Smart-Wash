@@ -1,5 +1,10 @@
 ﻿@inherits LayoutComponentBase
 @using MudBlazor
+@using SmartWash.Domain.Entities
+@using Microsoft.AspNetCore.Identity
+
+@inject NavigationManager NavigationManager
+@inject SignInManager<ApplicationUser> SignInManager
 
 <PageTitle>Smart Wash</PageTitle>
 
@@ -11,10 +16,18 @@
 
     <MudAppBar Fixed="false" Elevation="1">
         <MudSpacer/>
-        <MudButton Link="/">Home</MudButton>
-        <MudButton Link="/about">About</MudButton>
-        <MudButton Link="/Account/Login">Login</MudButton>
-        <MudButton Link="/Account/SignUp">Sign Up</MudButton>
+            <MudButton Link="/">Home</MudButton>
+            <MudButton Link="/about">About</MudButton>
+        <AuthorizeView Roles="Member">
+            <NotAuthorized>
+                <MudButton Link="/Account/Login">Login</MudButton>
+                <MudButton Link="/Account/SignUp">Sign Up</MudButton>
+            </NotAuthorized>
+            <Authorized>
+                <MudButton Style="margin-right:20px" OnClick="SignOutUser">Logout</MudButton>
+                <MudAvatar Color="Color.Primary">@context.User.Identity?.Name?[0].ToString().ToUpper()</MudAvatar>
+            </Authorized>
+        </AuthorizeView>
     </MudAppBar>
 
     <MudMainContent Style="padding: 0;">
@@ -25,6 +38,21 @@
 </MudLayout>
 
 @*TODO: Add authorization back when done*@
+
+@code {
+    public async Task SignOutUser()
+    {
+        try
+        {
+            await SignInManager.SignOutAsync();
+        } catch(Exception e)
+        {
+            // :(
+        }
+
+        NavigationManager.NavigateTo("/");
+    }
+}
 
 
 
