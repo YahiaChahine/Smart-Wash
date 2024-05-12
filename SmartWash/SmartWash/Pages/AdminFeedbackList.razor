@@ -75,6 +75,8 @@
         var replies = await ReplyRepository.GetByAdminAsync(_admin.Id);
         allReplies = replies.ToList();
 
+
+        StateHasChanged();
     }
 
 
