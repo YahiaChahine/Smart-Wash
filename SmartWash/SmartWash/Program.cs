@@ -14,6 +14,7 @@ using SmartWash.Infrastructure.Stripe;
 using SmartWash.Domain.Interfaces;
 using SmartWash.WebUI;
 using Microsoft.AspNetCore.Components.Authorization;
+using SmartWash.Infrastructure.SignalR;
 using SmartWash.WebUI.Account;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,22 +53,6 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
-////Identity
-//builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-//{
-//    options.Password.RequireDigit = false;
-//    options.Password.RequireLowercase = false;
-//    options.Password.RequireNonAlphanumeric = false;
-//    options.Password.RequireUppercase = false;
-//    options.Password.RequiredLength = 5;
-//    options.SignIn.RequireConfirmedEmail = true;
-//})
-//    .AddRoles<IdentityRole>()
-//    .AddEntityFrameworkStores<DataContext>();
-//builder.Services.AddScoped<SignInManager<ApplicationUser>>();
-//builder.Services.AddIdentityCore<Admin>().AddEntityFrameworkStores<DataContext>();
-//builder.Services.AddIdentityCore<ApplicationUser>().AddEntityFrameworkStores<DataContext>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -96,6 +81,10 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapHub<LaundryHub>("/laundry-hub"); // Map your Hub here
+
+app.MapFallbackToFile("index.html");
 
 app.MapAdditionalIdentityEndpoints();
 

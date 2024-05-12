@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using SmartWash.Application.MachineSystem;
+using SmartWash.Application.SignalRSystem;
 using SmartWash.Domain;
 using SmartWash.Domain.Entities;
 
@@ -9,6 +11,9 @@ namespace SmartWash.WebUI.Pages
     {
         [Parameter]
         public string TypeStr { get; set; }
+
+        [Inject] private ISignalRService SignalR { get; set; }
+        [Inject] private IMachineService MachineService { get; set; }
 
         private MachineType? Type { get; set; }
 
@@ -20,9 +25,15 @@ namespace SmartWash.WebUI.Pages
 
         private IEnumerable<Machine>? AvailableMachines { get; set; }
 
-
         protected override async Task OnInitializedAsync()
         {
+            await SignalR.StartAsync();
+
+            SignalR.OnMachineBooked( async () =>
+            {
+                await UpdateMachines();
+            });
+
             Type = TypeStr switch
             {
                 "washing-machine" => MachineType.WashingMachine,
@@ -94,7 +105,7 @@ namespace SmartWash.WebUI.Pages
             // Get the machines that match the selected type
             AvailableMachines = AvailableMachines.Where(m => Type == null || m.Type == Type);
 
-            StateHasChanged();
+            await this.InvokeAsync(this.StateHasChanged);
         }
     }
 

@@ -9,6 +9,7 @@ using SmartWash.Application.CookieSystem;
 using SmartWash.Application.FeedbackSystem;
 using SmartWash.Application.MachineSystem;
 using SmartWash.Application.PaymentSystem;
+using SmartWash.Application.SignalRSystem;
 using SmartWash.Application.UserSystem;
 
 namespace SmartWash.Application
@@ -23,6 +24,8 @@ namespace SmartWash.Application
             services.AddScoped<IMachineService, MachineService>();
 
             services.AddScoped<IUserService, UserService>();
+
+            services.AddScoped<ISignalRService, SignalRService>();
 
             //services.AddScoped<ICookieService, CookieService>();
 
