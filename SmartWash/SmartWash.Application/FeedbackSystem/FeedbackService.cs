@@ -47,6 +47,10 @@ namespace SmartWash.Application.FeedbackSystem
 		{
 			var feedback = await _feedbackRepository.GetByIdAsync(reply.FeedbackId);
 			var user = await _adminManager.FindByIdAsync(feedback.UserId);
+			if (user.Notifications == null)
+			{
+				user.Notifications = new List<string>();
+			}
 			user.Notifications.Add($"New reply from admin {reply.User.UserName}");
 			return reply;
 		}
@@ -54,13 +58,17 @@ namespace SmartWash.Application.FeedbackSystem
 		public async Task<Feedback> NotifyAdminsAsync(Feedback feedback)
 		{
 
-			var admins = await _adminManager.Users.ToListAsync(); // Assuming you have a method to fetch all admin users
+			var admins = _adminManager.Users.ToList();
 			foreach (var admin in admins)
 			{
 				var validAdmin = await _adminManager.GetRolesAsync(admin);
 				if (validAdmin.Contains("Admin"))
 				{
-					admin.Notifications.Add($"New feedback from user {feedback.User.UserName}");
+                    if (admin.Notifications == null)
+                    {
+                        admin.Notifications = new List<string>();
+                    }
+                    admin.Notifications.Add($"New feedback from user {feedback.User.UserName}");
 				}
 			}
 
