@@ -24,12 +24,34 @@
                 <MudButton Link="/Account/SignUp">Sign Up</MudButton>
             </NotAuthorized>
             <Authorized>
-                @if (context.User.IsInRole("Admin"))
-                {
-                    <MudButton Link="/Admin">Admin</MudButton>
-                }
                 <MudButton Style="margin-right: 20px" OnClick="SignOutUser">Logout</MudButton>
-                <MudAvatar Color="Color.Primary">@context.User.Identity?.Name?[0].ToString().ToUpper()</MudAvatar>
+                <AuthorizeView Roles="Member">
+                    <Authorized Context="anotherig">
+                        <MudMenu>
+                            <ActivatorContent>
+                                <MudAvatar Color="Color.Primary">@context.User.Identity?.Name?[0].ToString().ToUpper()</MudAvatar>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <MudMenuItem Link="/Account/UserFeedback">Write Feedback</MudMenuItem>
+                                <MudMenuItem Link="/Account/FeedbackList">View Feedbacks</MudMenuItem>
+                                <MudMenuItem>Bookings</MudMenuItem>
+                                <MudMenuItem>Cameras</MudMenuItem>
+                            </ChildContent>
+                        </MudMenu>
+                    </Authorized>
+
+                    <NotAuthorized Context="haha">
+                        <MudMenu>
+                            <ActivatorContent>
+                                    <MudAvatar Color="Color.Primary">@context.User.Identity?.Name?[0].ToString().ToUpper()</MudAvatar>
+                                </ActivatorContent>
+                            <ChildContent>
+                                <MudMenuItem Link="/Account/AdminFeedbackList">User Feedback</MudMenuItem>
+                                <MudMenuItem>Cameras</MudMenuItem>
+                            </ChildContent>
+                        </MudMenu>
+                    </NotAuthorized>
+                </AuthorizeView>
             </Authorized>
         </AuthorizeView>
     </MudAppBar>

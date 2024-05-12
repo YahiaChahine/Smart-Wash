@@ -7,6 +7,7 @@
 @using SmartWash.WebUI.Account
 @using SmartWash.WebUI.Account.Shared
 
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IUserStore<ApplicationUser> UserStore
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
@@ -97,6 +98,16 @@
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
+        var user = authState.User;
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
 
     private async Task RegisterUser(EditContext editContext)
     {

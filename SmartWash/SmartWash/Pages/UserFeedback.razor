@@ -1,0 +1,100 @@
+﻿@page "/Account/UserFeedback"
+@using SmartWash.WebUI.Shared
+@using SmartWash.Application.FeedbackSystem
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IFeedbackService FeedbackService
+@inject UserManager<ApplicationUser> UserManager
+@inject IDialogService DialogService
+
+<PageTitle>Feedback</PageTitle>
+
+<MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
+
+    <AuthorizeView Roles="Member">
+        
+<div class="row">
+    <div class="fullscreen-section text-font">
+        <h1>Submit Feedback</h1>
+        <section style="width: 100%;">
+            <EditForm Context="diff" Model="Input" method="post" OnValidSubmit="SubmitFeedback" FormName="feedback">
+                <DataAnnotationsValidator />
+                <hr />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Title" class="form-control" autocomplete="title" aria-required="true" placeholder="amazingservice" />
+                    <label for="email" class="form-label">Title</label>
+                    <ValidationMessage For="() => Input.Title" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputTextArea type="content" @bind-Value="Input.Content" class="form-control" autocomplete="content" aria-required="true" placeholder="content" />
+                    <label for="content" class="form-label">Content</label>
+                    <ValidationMessage For="() => Input.Content" class="text-danger" />
+                </div>
+                <div>
+                    <button type="submit" class="w-100 btn btn-lg btn-primary" style="background-color: rgba(102, 133, 160, 1); border: none;">Submit</button>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+</div>
+    </AuthorizeView>
+    
+</MudContainer>
+
+
+@code
+{
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    private ApplicationUser _user { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
+        var userName = authState.User?.Identity?.Name;
+
+        if (authState.User.Identity == null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        _user = await UserManager.FindByNameAsync(userName);
+    }
+
+    private async Task SubmitFeedback()
+    {
+        Feedback feedbackObject;
+        feedbackObject = new Feedback
+		{
+			Title = Input.Title,
+			Content = Input.Content,
+			UserId = _user.Id,
+            User = _user,
+            FeedbackDateTime = DateTime.Now,
+		};
+
+        await FeedbackService.SubmitFeedbackAsync(feedbackObject);
+		
+        bool? result = await DialogService.ShowMessageBox(
+            "Alert",
+            "Feedback Submitted",
+           yesText: "Yay!", cancelText: "WOW!");
+        
+        NavigationManager.NavigateTo("/");
+    }
+
+
+    private sealed class InputModel
+    {
+        [Required]
+        public string Title { get; set; } = "";
+
+        [Required]
+        public string Content { get; set; } = "";
+    }
+}

@@ -1,0 +1,83 @@
+﻿@page "/Account/AdminFeedbackList"
+@using SmartWash.WebUI.Shared
+@using SmartWash.Application.FeedbackSystem
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+@using SmartWash.Domain.Interfaces
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IFeedbackService FeedbackService
+@inject IFeedbackRepository FeedbackRepository
+@inject IReplyRepository ReplyRepository
+@inject UserManager<ApplicationUser> UserManager
+@inject IDialogService DialogService
+
+<PageTitle>Feedback List</PageTitle>
+
+<MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
+
+    <AuthorizeView Roles="Admin">
+
+
+        <h1>User Feedback List</h1>
+        @foreach (var feedback in feedbackList)
+        {
+            var user = UserManager.FindByIdAsync(feedback.UserId).Result;
+            <p>Feedback from @user.UserName</p>
+            <MudText Align="Align.Center" Typo="Typo.h5">@feedback.Title</MudText>
+            <MudText Align="Align.Center" Typo="Typo.body1">@feedback.Content</MudText>
+            var replies = allReplies.Where(r => r.FeedbackId == feedback.ID).ToList();
+
+            <br>
+            <MudPaper Width="100%" Square="true">
+                <MudList Clickable="false">
+                    @foreach (var reply in replies)
+                    {
+                        <p>me: </p>
+                        <MudListItem>@reply.Content</MudListItem>
+                        <MudDivider />
+                    }
+                </MudList>
+            </MudPaper>
+            <br>
+            <MudButton Link="@($"/Account/AdminReply/{feedback.ID}")" Variant="Variant.Filled">Reply</MudButton>
+        }
+    </AuthorizeView>
+
+</MudContainer>
+
+
+@code
+{
+    private List<Feedback> feedbackList { get; set; } = new List<Feedback>();
+
+    private ApplicationUser _admin { get; set; } = new();
+
+    private List<Reply> allReplies { get; set; } = new List<Reply>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
+        var userName = authState.User?.Identity?.Name;
+
+        if (authState.User.Identity == null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+
+        _admin = await UserManager.FindByNameAsync(userName);
+
+
+        var feedbacks = await FeedbackRepository.GetAllAsync();
+        feedbackList = feedbacks.ToList();
+
+        var replies = await ReplyRepository.GetByAdminAsync(_admin.Id);
+        allReplies = replies.ToList();
+
+
+        StateHasChanged();
+    }
+
+
+}
