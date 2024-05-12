@@ -18,7 +18,7 @@ namespace SmartWash.Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddScoped<IBookingService, BookingService>();
-            //services.AddScoped<IFeedbackService, FeedbackService>();
+            services.AddScoped<IFeedbackService, FeedbackService>();
             services.AddScoped<IPaymentService, DemoPaymentService>();
             services.AddScoped<IMachineService, MachineService>();
 

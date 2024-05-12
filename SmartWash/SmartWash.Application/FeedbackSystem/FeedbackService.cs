@@ -43,13 +43,13 @@ namespace SmartWash.Application.FeedbackSystem
 		}
 
 
-        public async Task<Reply> NotifyUserAsync(Reply reply)
+		public async Task<Reply> NotifyUserAsync(Reply reply)
 		{
 			var feedback = await _feedbackRepository.GetByIdAsync(reply.FeedbackId);
 			var user = await _adminManager.FindByIdAsync(feedback.UserId);
 			user.Notifications.Add($"New reply from admin {reply.User.UserName}");
-            return reply;
-        }
+			return reply;
+		}
 
 		public async Task<Feedback> NotifyAdminsAsync(Feedback feedback)
 		{

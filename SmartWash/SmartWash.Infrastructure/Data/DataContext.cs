@@ -17,7 +17,6 @@ namespace SmartWash.Infrastructure.Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Machine> Machines { get; set; }
         public DbSet<CreditCard> CreditCards { get; set; }
-        public DbSet<Admin> Admins { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
