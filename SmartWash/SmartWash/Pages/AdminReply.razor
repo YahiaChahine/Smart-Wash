@@ -14,11 +14,11 @@
 
 <MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
 
-    <AuthorizeView Roles="Member">
+    <AuthorizeView Roles="Admin">
 
         <div class="row">
             <div class="fullscreen-section text-font">
-                <h1>Submit Feedback</h1>
+                <h1>Submit Reply</h1>
                 <section style="width: 100%;">
                     <EditForm Context="diff" Model="Input" method="post" OnValidSubmit="SubmitFeedback" FormName="feedback">
                         <DataAnnotationsValidator />
@@ -79,12 +79,7 @@
 
         await FeedbackService.ReplyToFeedback(replyObject);
 
-        bool? result = await DialogService.ShowMessageBox(
-            "Alert",
-            "Reply Submitted",
-           yesText: "Yay!", cancelText: "WOW!");
-
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/Account/AdminFeedbackList");
     }
 
 

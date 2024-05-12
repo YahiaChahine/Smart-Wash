@@ -32,7 +32,8 @@
                             <MudList Clickable="false">
                     @foreach(var reply in replies)
                     {
-                        <p>Reply from @reply.User.UserName</p>       
+                        var user = UserManager.FindByIdAsync(reply.UserId).Result;
+                        <p>Reply from @user.UserName</p>       
                         <MudListItem>@reply.Content</MudListItem>
                         <MudDivider />
                         

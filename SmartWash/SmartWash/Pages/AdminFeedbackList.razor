@@ -17,13 +17,14 @@
 
 <MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
 
-    <AuthorizeView Roles="Member">
+    <AuthorizeView Roles="Admin">
 
 
         <h1>User Feedback List</h1>
         @foreach (var feedback in feedbackList)
         {
-            <p>Feedback from @feedback.User.UserName</p>
+            var user = UserManager.FindByIdAsync(feedback.UserId).Result;
+            <p>Feedback from @user.UserName</p>
             <MudText Align="Align.Center" Typo="Typo.h5">@feedback.Title</MudText>
             <MudText Align="Align.Center" Typo="Typo.body1">@feedback.Content</MudText>
             var replies = allReplies.Where(r => r.FeedbackId == feedback.ID).ToList();
@@ -40,7 +41,7 @@
                 </MudList>
             </MudPaper>
             <br>
-            <MudButton Link="@($"/Account/AdminReply/{feedback.ID}")" Variant="Variant.Filled">Default</MudButton>
+            <MudButton Link="@($"/Account/AdminReply/{feedback.ID}")" Variant="Variant.Filled">Reply</MudButton>
         }
     </AuthorizeView>
 
