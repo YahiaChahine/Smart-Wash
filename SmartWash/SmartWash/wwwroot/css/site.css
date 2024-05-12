@@ -17,6 +17,10 @@
     position: relative;
 }
 
+.text-font {
+    font-family: 'Roboto', 'Helvetica', 'Arial', 'sans-serif';
+}
+
 .center {
     display: flex;
     flex-direction: column;

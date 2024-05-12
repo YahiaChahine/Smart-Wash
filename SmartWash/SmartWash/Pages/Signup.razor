@@ -1,10 +1,11 @@
-﻿@page "/signup"
+﻿@page "/Account/SignUp"
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Forms
 @using SmartWash.Domain.Entities
 @using Microsoft.AspNetCore.Identity
 @using SmartWash.WebUI.Account
+@using SmartWash.WebUI.Account.Shared
 
 @inject IUserStore<ApplicationUser> UserStore
 @inject SignInManager<ApplicationUser> SignInManager
@@ -12,6 +13,8 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
+@layout AccountLayout
+@* 
 <MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
     <MudCard Style="width: 50%; max-width: 1000px;">
         <MudCardHeader>
@@ -22,10 +25,14 @@
         <MudCardContent>
             <EditForm Model="Input" OnValidSubmit="RegisterUser">
                 <DataAnnotationsValidator />
+                
+                <MudTextField Label="Full Name" @bind-Value="@Input.FullName" Required="true" />
+                <ValidationMessage For="() => Input.FullName" Class="text-danger" />
+
                 <MudTextField Label="Email" @bind-Value="@Input.Email" Required="true" />
                 <ValidationMessage For="() => Input.Email" Class="text-danger" />
 
-                <MudTextField Label="Password" InputType="InputType.Password" @bind-Value="@Input.Password" Required="true" />
+                <MudTextField Label="Password" @bind-Value="@Input.Password" Required="true" />
                 <ValidationMessage For="() => Input.Password" Class="text-danger" />
 
                 <MudTextField Label="Confirm Password" InputType="InputType.Password" @bind-Value="@Input.ConfirmPassword" Required="true" />
@@ -39,37 +46,77 @@
             </EditForm>
         </MudCardContent>
     </MudCard>
-</MudContainer>
+</MudContainer> *@
+
+
+<PageTitle>Sign Up</PageTitle>
+
+<div class="row" >
+    <div class="fullscreen-section text-font">
+        <h1>Sign Up</h1>
+        <section style="width: 30%;">
+            <StatusMessage Message="@ErrorMessage" />
+            <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register">
+                <DataAnnotationsValidator />
+                <hr />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.FullName" class="form-control" autocomplete="fullname" aria-required="true" placeholder="John Doe"/>
+                    <label>Full Name</label>
+                    <ValidationMessage For="() => Input.FullName" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label for="email">Email</label>
+                    <ValidationMessage For="() => Input.Email" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                    <label for="password">Password</label>
+                    <ValidationMessage For="() => Input.Password" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText type="password" @bind-Value="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                    <label for="confirm-password">Confirm Password</label>
+                    <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+                </div>
+                <button type="submit" class="w-100 btn btn-lg btn-primary" style="background-color: rgba(102, 133, 160, 1); border: none;">Register</button>
+            </EditForm>
+        </section>
+    </div>
+</div>
 
 @code {
     private bool ShowError = false;
-    private string ErrorMessage = "";
+    
+    private string? ErrorMessage => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
+
 
     private IEnumerable<IdentityError>? identityErrors;
 
+    [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
 
     private async Task RegisterUser(EditContext editContext)
     {
         var user = CreateUser();
-        user.FullName = Input.Email;
-        user.PointNum = 0;
-        user.Email = Input.Email;
-        user.RegistrationDate = DateTime.Now;
+
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+        var emailStore = GetEmailStore();
+        await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
+        user.FullName = Input.FullName;
+        user.PointNum = 0;
+        user.RegistrationDate = DateTime.Now;
+
         var result = await UserManager.CreateAsync(user, Input.Password);
 
         if (!result.Succeeded)
         {
             identityErrors = result.Errors;
             ShowError = true;
-            ErrorMessage = $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
             return;
         }
-
-        var userId = await UserManager.GetUserIdAsync(user);
-
-        //await UserManager.AddToRoleAsync(user, "Member");
 
         await SignInManager.SignInAsync(user, isPersistent: false);
 
@@ -89,8 +136,22 @@
         }
     }
 
+
+    private IUserEmailStore<ApplicationUser> GetEmailStore()
+    {
+        if (!UserManager.SupportsUserEmail)
+        {
+            throw new NotSupportedException("The default UI requires a user store with email support.");
+        }
+        return (IUserEmailStore<ApplicationUser>)UserStore;
+    }
+
     private sealed class InputModel
     {
+        [Required(ErrorMessage = "FullName is required")]
+        [Display(Name = "Full Name")]
+        public string FullName { get; set; } = "";
+
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email address")]
         public string Email { get; set; } = "";
