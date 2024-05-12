@@ -1,31 +1,46 @@
 ﻿@using SmartWash.Domain.Interfaces
+@using System.ComponentModel.DataAnnotations
 
 @inject ICreditCardRepository CreditCardRepository
 
 <MudDialog>
     <DialogContent>
-        <MudGrid Class="mb-8">
-            <MudItem xs="12">
-                <MudTextField Label="Card Holder" @bind-Value="CreditCard.CardHolderName"  Variant="@Variant.Text" />        
-            </MudItem>
-            <MudItem xs="12">
-                <MudTextField Mask="@(new PatternMask("0000 0000 0000 0000"))" Label="Credit Card Number"
-                              @bind-Value="CreditCard.CardNumber" Variant="@Variant.Text" Clearable/>
-            </MudItem>
-            <MudItem xs="4">
-                <MudTextField Mask="@(new DateMask("MM/YY", 'Y', 'M'))" Label="Expires"
-                              @bind-Value="_expiryDate" Variant="@Variant.Text"/>
-            </MudItem>
-            <MudItem xs="4">
-                <MudTextField Mask="@(new PatternMask("000"))" Label="CVC"
-                              @bind-Value="CreditCard.CVV" Variant="@Variant.Text"/>
-            </MudItem>
-        </MudGrid>
+        <EditForm Model="Input" OnValidSubmit="AddPaymentMethod" id="payment-form">
+            <DataAnnotationsValidator />
+
+            <MudGrid Class="mb-8">
+                <MudItem xs="12">
+                    <MudTextField Label="Card Holder" @bind-Value="Input.CardHolderName" Variant="@Variant.Text"/>
+                    <ValidationMessage For="() => Input.CardHolderName" class="text-danger" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Mask="@(new PatternMask("0000 0000 0000 0000"))" Label="Credit Card Number"
+                                  @bind-Value="Input.CreditCardNumber" Variant="@Variant.Text" Clearable/>
+
+                    <ValidationMessage For="() => Input.CreditCardNumber" class="text-danger" />
+                </MudItem>
+                <MudItem xs="4">
+                    <MudTextField Mask="@(new DateMask("MM/YY", 'Y', 'M'))" Label="Expires"
+                                  @bind-Value="Input.ExpiryDate" Variant="@Variant.Text"/>
+                    
+                    <ValidationMessage For="() => Input.ExpiryDate" class="text-danger" />
+                </MudItem>
+                <MudItem xs="4">
+                    <MudTextField Mask="@(new PatternMask("000"))" Label="CVC"
+                                  @bind-Value="Input.CVV" Variant="@Variant.Text"/>
+                    
+                    <ValidationMessage For="() => Input.CVV" class="text-danger" />
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+
+        <MudAlert Severity="Severity.Error"></MudAlert>
+
     </DialogContent>
     <DialogActions>
         <MudStack Row="true" Justify="Justify.SpaceBetween" Class="fullwidth mx-6">
             <MudButton Color="Color.Primary" OnClick="Close" Size="Size.Large">Cancel</MudButton>
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="AddPaymentMethod" 
+             <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit" form="payment-form"
                        Size="Size.Large" Class="px-10">   
                 @if (_processing)
                {
@@ -46,14 +61,20 @@
     
     [Parameter] public ApplicationUser? User { get; set; }
 
+    [SupplyParameterFromForm] private InputModel Input { get; set; } = new();
+
     private CreditCard CreditCard { get; set; } = new();
-    private string _expiryDate;
     private bool _processing;
 
     private async Task AddPaymentMethod()
     {
-        CreditCard.ExpirationMonth = int.Parse(_expiryDate.Substring(0, 2));
-        CreditCard.ExpirationYear = int.Parse(_expiryDate.Substring(3, 2));
+        CreditCard.CardHolderName = Input.CardHolderName;
+        CreditCard.CardNumber = Input.CreditCardNumber;
+
+        CreditCard.ExpirationMonth = int.Parse(Input.ExpiryDate.Substring(0, 2));
+        CreditCard.ExpirationYear = int.Parse(Input.ExpiryDate.Substring(3, 2));
+
+        CreditCard.CVV = Input.CVV;
 
         if (User is not null)
         {
@@ -69,5 +90,20 @@
 
     void Close() => MudDialog.Close(DialogResult.Cancel());
 
+    private sealed class InputModel
+    {
+        [Required]
+        public string CardHolderName { get; set; } = string.Empty;
 
+        [Required]
+        [CreditCard]
+        [DataType(DataType.CreditCard)]
+        public string CreditCardNumber { get; set; } = string.Empty;
+
+        [Required]
+        public string ExpiryDate { get; set; } = string.Empty;
+
+        [Required]
+        public string CVV { get; set; } = string.Empty;
+    }
 }
