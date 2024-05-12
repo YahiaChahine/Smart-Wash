@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartWash.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using SmartWash.Infrastructure.Data;
 namespace SmartWash.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240512124902_AddedBookingPrice")]
+    partial class AddedBookingPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -389,6 +392,7 @@ namespace SmartWash.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("AdminId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Content")
@@ -400,15 +404,9 @@ namespace SmartWash.Infrastructure.Migrations
                     b.Property<DateTime>("ReplyDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("ID");
 
                     b.HasIndex("AdminId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Replies");
                 });
@@ -431,20 +429,11 @@ namespace SmartWash.Infrastructure.Migrations
                     b.Property<bool>("IsGuest")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Notifications")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("PointNum")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime2");
-
-                    b.ToTable("AspNetUsers", t =>
-                        {
-                            t.Property("Notifications")
-                                .HasColumnName("ApplicationUser_Notifications");
-                        });
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
@@ -541,17 +530,13 @@ namespace SmartWash.Infrastructure.Migrations
 
             modelBuilder.Entity("SmartWash.Domain.Entities.Reply", b =>
                 {
-                    b.HasOne("SmartWash.Domain.Entities.Admin", null)
+                    b.HasOne("SmartWash.Domain.Entities.Admin", "Admin")
                         .WithMany("Replies")
-                        .HasForeignKey("AdminId");
-
-                    b.HasOne("SmartWash.Domain.Entities.ApplicationUser", "User")
-                        .WithMany("Replies")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Admin");
                 });
 
             modelBuilder.Entity("SmartWash.Domain.Entities.Admin", b =>
@@ -562,8 +547,6 @@ namespace SmartWash.Infrastructure.Migrations
             modelBuilder.Entity("SmartWash.Domain.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("Bookings");
-
-                    b.Navigation("Replies");
                 });
 #pragma warning restore 612, 618
         }

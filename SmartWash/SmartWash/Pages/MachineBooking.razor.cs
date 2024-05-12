@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using SmartWash.Application.BookingSystem;
+using SmartWash.Application.UserSystem;
 using SmartWash.Domain.Entities;
 using SmartWash.Domain.Interfaces;
 using SmartWash.WebUI.Account;
@@ -18,8 +19,7 @@ namespace SmartWash.WebUI.Pages
         [Inject] private IDialogService DialogService { get; set; }
         [Inject] private ICreditCardRepository CreditCardRepository { get; set; }
         [Inject] private IBookingService BookingService { get; set; }
-        [Inject] private UserManager<ApplicationUser> UserManager { get; set; }
-        [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+        [Inject] private IUserService UserService { get; set; }
 
         [SupplyParameterFromQuery(Name = "machineId")] private int? MachineId { get; set; }
         [SupplyParameterFromQuery(Name = "machineType")] private string? Type { get; set; }
@@ -39,11 +39,13 @@ namespace SmartWash.WebUI.Pages
         {
             //Booking = (Booking)StateContainer.ObjectTunnel[ObjectHash];
 
+            //var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            //User = await UserManager.GetUserAsync(authState.User);
+            
+            _amount = Type == MachineType.WashingMachine.ToString() ? Constants.WashingMachinePrice : Constants.DryingMachinePrice;
+            _amount *= CycleNum.Value;
 
-            //_amount = Booking.Machine.Type == MachineType.WashingMachine ? Constants.WashingMachinePrice : Constants.DryingMachinePrice;
-            //_amount *= Booking.CycleNum;
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            User = await UserManager.GetUserAsync(authState.User);
+            User = await UserService.GetUser();
 
             if (User is not null)
             {
@@ -69,7 +71,7 @@ namespace SmartWash.WebUI.Pages
                 { "User", User },
             };
 
-            var dialog = await DialogService.ShowAsync<PaymentMethodDialogComponent>("Add Payment Method", parameters, new DialogOptions { MaxWidth = MaxWidth.Small });
+            var dialog = await DialogService.ShowAsync<PaymentMethodDialogComponent>("Add Payment Method", parameters, new DialogOptions { MaxWidth = MaxWidth.Medium });
             var result = await dialog.Result;
 
             if (!result.Canceled)
@@ -87,7 +89,7 @@ namespace SmartWash.WebUI.Pages
             IsPaymentMethodSet = false;
         }
 
-        private void Book()
+        private async Task Book()
         {
             if (MachineId is null || StartTime is null || CycleNum is null)
             {
@@ -102,9 +104,21 @@ namespace SmartWash.WebUI.Pages
                 CycleNum = CycleNum.Value,
                 IsPaid = !_coinPayment,
                 UserId = User?.Id,
+                Amount = _amount,
             };
 
-            BookingService.CreateBookingAsync(Booking);
+            var createdBooking = await BookingService.CreateBookingAsync(Booking);
+
+            // Show the booking details dialog
+            var parameters = new DialogParameters
+            {
+                { "Booking", createdBooking },
+            };
+
+            var dialog = await DialogService.ShowAsync<BookingDetailsDialogComponent>("Booking Details", parameters, new DialogOptions { MaxWidth = MaxWidth.Small });
+            await dialog.Result;
+
+            NavigationManager.NavigateTo("/");
         }
 
         private async Task<IEnumerable<string>> GetPromotionCodes(string arg)
