@@ -73,6 +73,7 @@ namespace SmartWash.WebUI.Pages
             var uri = NavigationManager.GetUriWithQueryParameters("/Account/machine", new Dictionary<string, object?>()
             {
                 { "machineId", machine.ID },
+                { "machineType", machine.Type.ToString() },
                 { "startTime", SelectedDate.Value.Add(SelectedTime.Value) },
                 { "cycleNum", Cycles },
             });

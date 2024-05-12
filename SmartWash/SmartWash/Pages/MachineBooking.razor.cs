@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
+using SmartWash.Application.BookingSystem;
 using SmartWash.Domain.Entities;
 using SmartWash.Domain.Interfaces;
 using SmartWash.WebUI.Account;
@@ -16,13 +17,12 @@ namespace SmartWash.WebUI.Pages
         [Inject] private NavigationManager NavigationManager { get; set; }
         [Inject] private IDialogService DialogService { get; set; }
         [Inject] private ICreditCardRepository CreditCardRepository { get; set; }
+        [Inject] private IBookingService BookingService { get; set; }
         [Inject] private UserManager<ApplicationUser> UserManager { get; set; }
         [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
-        [CascadingParameter]
-        private HttpContext? HttpContext { get; set; } = default!;
-
         [SupplyParameterFromQuery(Name = "machineId")] private int? MachineId { get; set; }
+        [SupplyParameterFromQuery(Name = "machineType")] private string? Type { get; set; }
         [SupplyParameterFromQuery(Name = "startTime")] private DateTime? StartTime { get; set; }
         [SupplyParameterFromQuery(Name = "cycleNum")] private int? CycleNum { get; set; }
 
@@ -39,12 +39,6 @@ namespace SmartWash.WebUI.Pages
         {
             //Booking = (Booking)StateContainer.ObjectTunnel[ObjectHash];
 
-            Booking = new Booking
-            {
-                MachineId = MachineId ?? 0,
-                StartTime = StartTime ?? DateTime.Today.AddHours(8),
-                CycleNum = CycleNum ?? 1
-            };
 
             //_amount = Booking.Machine.Type == MachineType.WashingMachine ? Constants.WashingMachinePrice : Constants.DryingMachinePrice;
             //_amount *= Booking.CycleNum;
@@ -85,9 +79,32 @@ namespace SmartWash.WebUI.Pages
             }
         }
 
+        private async Task RemovePaymentMethod()
+        {
+            await CreditCardRepository.DeleteAsync(CreditCard!.ID);
+
+            CreditCard = null;
+            IsPaymentMethodSet = false;
+        }
+
         private void Book()
         {
+            if (MachineId is null || StartTime is null || CycleNum is null)
+            {
+                NavigationManager.NavigateTo("/browse");
+                throw new InvalidOperationException("MachineId, StartTime, CycleNum and User must be set");
+            }
 
+            Booking = new()
+            {
+                MachineId = MachineId.Value,
+                StartTime = StartTime,
+                CycleNum = CycleNum.Value,
+                IsPaid = !_coinPayment,
+                UserId = User?.Id,
+            };
+
+            BookingService.CreateBookingAsync(Booking);
         }
 
         private async Task<IEnumerable<string>> GetPromotionCodes(string arg)

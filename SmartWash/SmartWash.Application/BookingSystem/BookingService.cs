@@ -30,8 +30,9 @@ namespace SmartWash.Application.BookingSystem
             var createdBooking = await _bookingRepository.AddAsync(booking);
 
             //Add reward points
-            if (!booking.User.IsGuest)
-                booking.User.PointNum += 10;
+            if (booking.UserId is not null)
+            {
+            }
 
             return createdBooking;
         }

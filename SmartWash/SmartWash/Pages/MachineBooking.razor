@@ -9,16 +9,16 @@
         <MudCard Style="width: 30%; max-width: 1000px; margin-top: -4em;">
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h4" Class="my-4">Machine @Booking.MachineId</MudText>
+                    <MudText Typo="Typo.h4" Class="my-4">Machine @MachineId</MudText>
                 </CardHeaderContent>
                 <CardHeaderActions>
-@*                     <MudIcon Icon="@(Booking.Machine.Type == MachineType.WashingMachine ? Icons.Material.Filled.LocalLaundryService : Icons.Material.Filled.DryCleaning)"
-                             Size="Size.Large" Style="margin: 1rem;" Color="Color.Primary"/> *@
+                    <MudIcon Icon="@(Type == MachineType.WashingMachine.ToString() ? Icons.Material.Filled.LocalLaundryService : Icons.Material.Filled.DryCleaning)"
+                             Size="Size.Large" Style="margin: 1rem;" Color="Color.Primary"/>
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
                 <MudStack Spacing="1" Style="margin-bottom: 2rem;">
-                    <MudText Typo="Typo.body1" Color="Color.Tertiary"></MudText>
+                    <MudText Typo="Typo.body1" Color="Color.Tertiary">@Type</MudText>
                     <MudText Typo="Typo.body1" Color="Color.Tertiary">@CycleNum Cycle(s)</MudText>
                     <MudText Typo="Typo.body1" Color="Color.Tertiary">@StartTime.ToString()</MudText>
                 </MudStack>
@@ -34,10 +34,9 @@
                         <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" DisableElevation="true">
                             @if (IsPaymentMethodSet)
                             {
-                                <MudButton>@((CreditCard.CardNumber[0..4]) + " **** **** ****")</MudButton>
+                                <MudButton>CARD @((CreditCard?.CardNumber[0..4]) + " **** **** ****")</MudButton>
                                 <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown" Style="align-self: auto;">
-                                    <MudMenuItem>Modify</MudMenuItem>
-                                    <MudMenuItem>Remove</MudMenuItem>
+                                    <MudMenuItem OnClick="RemovePaymentMethod">Remove</MudMenuItem>
                                 </MudMenu>
                             }
                             else
