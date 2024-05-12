@@ -24,7 +24,11 @@
                 <MudButton Link="/Account/SignUp">Sign Up</MudButton>
             </NotAuthorized>
             <Authorized>
-                <MudButton Style="margin-right:20px" OnClick="SignOutUser">Logout</MudButton>
+                @if (context.User.IsInRole("Admin"))
+                {
+                    <MudButton Link="/Admin">Admin</MudButton>
+                }
+                <MudButton Style="margin-right: 20px" OnClick="SignOutUser">Logout</MudButton>
                 <MudAvatar Color="Color.Primary">@context.User.Identity?.Name?[0].ToString().ToUpper()</MudAvatar>
             </Authorized>
         </AuthorizeView>
@@ -37,20 +41,10 @@
     </MudMainContent>
 </MudLayout>
 
-@*TODO: Add authorization back when done*@
-
 @code {
     public async Task SignOutUser()
     {
-        try
-        {
-            await SignInManager.SignOutAsync();
-        } catch(Exception e)
-        {
-            // :(
-        }
-
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/Account/SignOut");
     }
 }
 

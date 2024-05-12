@@ -1,0 +1,23 @@
+﻿@page "/Account/SignOut"
+@using SmartWash.WebUI.Account.Shared
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager NavigationManager
+
+@layout AccountLayout
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        await SignOut();
+    }
+
+    private async Task SignOut()
+    {
+        await SignInManager.SignOutAsync();
+
+        NavigationManager.NavigateTo("/");
+    }
+}
