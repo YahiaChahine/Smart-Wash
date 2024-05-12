@@ -5,7 +5,7 @@
     
     <AuthorizeView Roles="Member">
 
-            <MudText Align="Align.Center" Typo="Typo.h3">Welcome Valued Member !</MudText>
+            <MudText Align="Align.Center" Typo="Typo.h3">Welcome Valued Member!</MudText>
     </AuthorizeView>
     <AuthorizeView Roles="Admin">
         <Authorized>
@@ -19,7 +19,10 @@
             </div>
         </NotAuthorized>
     </AuthorizeView>
-    
+
+<AuthorizeView Roles="Admin">
+    <NotAuthorized>
+
     <MudContainer>
         <MudText Typo="Typo.h5" Class="my-4">Choose a machine type:</MudText>
 
@@ -31,7 +34,12 @@
                        StartIcon="@Icons.Material.Filled.DryCleaning" IconSize="Size.Large" OnClick="GoToBrowseDrying">Drying Machine</MudButton>
         </MudContainer>
     </MudContainer>
+        </NotAuthorized>
+    </AuthorizeView>
 </MudContainer>
+
+<AuthorizeView Roles="Admin">
+    <NotAuthorized>
 
 <MudContainer Class="fullscreen-section">
     
@@ -102,6 +110,7 @@
         </MudGrid>
 </MudContainer>
 
+
 <MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
     <MudText Typo="Typo.h4" Class="my-4">Contact Us</MudText>
     <MudStack Row="true" Spacing="10">
@@ -131,6 +140,9 @@
         </MudCard>
     </MudStack>
 </MudContainer>
+
+</NotAuthorized>
+</AuthorizeView>
 
 @code
 {
