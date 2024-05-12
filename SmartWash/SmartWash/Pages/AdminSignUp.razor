@@ -1,4 +1,4 @@
-﻿@page "/Account/SignUp"
+﻿@page "/Account/SignUp/Admin"
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Forms
@@ -15,7 +15,7 @@
 @inject RoleManager<IdentityRole> RoleManager
 
 @layout AccountLayout
-@* 
+@*
 <MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
     <MudCard Style="width: 50%; max-width: 1000px;">
         <MudCardHeader>
@@ -26,7 +26,7 @@
         <MudCardContent>
             <EditForm Model="Input" OnValidSubmit="RegisterUser">
                 <DataAnnotationsValidator />
-                
+
                 <MudTextField Label="Full Name" @bind-Value="@Input.FullName" Required="true" />
                 <ValidationMessage For="() => Input.FullName" Class="text-danger" />
 
@@ -52,9 +52,9 @@
 
 <PageTitle>Sign Up</PageTitle>
 
-<div class="row" >
+<div class="row">
     <div class="fullscreen-section text-font">
-        <h1>Sign Up</h1>
+        <h1>Admin Sign Up</h1>
         <section style="width: 30%;">
             <StatusMessage Message="@ErrorMessage" />
             <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register">
@@ -62,7 +62,7 @@
                 <hr />
                 <ValidationSummary class="text-danger" role="alert" />
                 <div class="form-floating mb-3">
-                    <InputText @bind-Value="Input.FullName" class="form-control" autocomplete="fullname" aria-required="true" placeholder="John Doe"/>
+                    <InputText @bind-Value="Input.FullName" class="form-control" autocomplete="fullname" aria-required="true" placeholder="John Doe" />
                     <label>Full Name</label>
                     <ValidationMessage For="() => Input.FullName" class="text-danger" />
                 </div>
@@ -119,13 +119,13 @@
             return;
         }
 
-        var role = new IdentityRole("Member");
-        var roleExists = await RoleManager.FindByNameAsync("Member");
+        var role = new IdentityRole("Admin");
+        var roleExists = await RoleManager.FindByNameAsync("Admin");
         if (roleExists == null)
         {
             var addRoleResults = await RoleManager.CreateAsync(role);
         }
-        var addUserRoleResult = await UserManager.AddToRoleAsync(user, "Member");
+        var addUserRoleResult = await UserManager.AddToRoleAsync(user, "Admin");
 
         await SignInManager.SignInAsync(user, isPersistent: false);
 
