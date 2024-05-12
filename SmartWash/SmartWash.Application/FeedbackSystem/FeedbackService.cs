@@ -51,7 +51,7 @@ namespace SmartWash.Application.FeedbackSystem
 			{
 				user.Notifications = new List<string>();
 			}
-			user.Notifications.Add($"New reply from admin {reply.User.UserName}");
+			user.Notifications.Add($"New reply from admin {reply.User.UserName} at {reply.ReplyDateTime}");
 			return reply;
 		}
 
@@ -68,7 +68,7 @@ namespace SmartWash.Application.FeedbackSystem
                     {
                         admin.Notifications = new List<string>();
                     }
-                    admin.Notifications.Add($"New feedback from user {feedback.User.UserName}");
+                    admin.Notifications.Add($"New feedback from user {feedback.User.UserName} at {feedback.FeedbackDateTime}");
 				}
 			}
 

@@ -1,0 +1,57 @@
+﻿@page "/Account/Admin/Notifications"
+@using SmartWash.WebUI.Shared
+@using SmartWash.Application.FeedbackSystem
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+@using SmartWash.Domain.Interfaces
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IFeedbackService FeedbackService
+@inject IFeedbackRepository FeedbackRepository
+@inject IReplyRepository ReplyRepository
+@inject UserManager<ApplicationUser> UserManager
+@inject IDialogService DialogService
+
+<PageTitle>Notifications</PageTitle>
+
+<MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
+
+    <AuthorizeView Roles="Admin">
+
+
+        <h1>User Feedback List</h1>
+        @foreach (var notification in notifications)
+        {
+            <MudText Align="Align.Center" Typo="Typo.h5">@notification</MudText>
+        }
+    </AuthorizeView>
+
+</MudContainer>
+
+
+@code
+{
+
+    private ApplicationUser _admin { get; set; } = new();
+    private IList<string> notifications { get; set; } = new List<string>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
+        var userName = authState.User?.Identity?.Name;
+
+        if (authState.User.Identity == null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+
+        _admin = await UserManager.FindByNameAsync(userName);
+
+        notifications = _admin.Notifications;
+
+    }
+
+
+}
