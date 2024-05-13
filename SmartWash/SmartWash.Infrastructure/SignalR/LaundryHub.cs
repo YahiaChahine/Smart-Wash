@@ -14,7 +14,7 @@ namespace SmartWash.Infrastructure.SignalR
             // Code to book the machine...
 
             // Notify all clients that the machine has been booked
-            await Clients.All.SendAsync("MachineBooked");
+            await Clients.Others.SendAsync("MachineBooked");
         }
     }
 }

@@ -82,7 +82,7 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.MapHub<LaundryHub>("/laundry-hub"); // Map your Hub here
+//app.MapHub<LaundryHub>("/laundry-hub"); // Map your Hub here
 
 app.MapFallbackToFile("index.html");
 

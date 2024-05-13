@@ -25,7 +25,7 @@ namespace SmartWash.Application
 
             services.AddScoped<IUserService, UserService>();
 
-            services.AddScoped<ISignalRService, SignalRService>();
+            //services.AddScoped<ISignalRService, SignalRService>();
 
             //services.AddScoped<ICookieService, CookieService>();
 

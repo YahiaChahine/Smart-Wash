@@ -21,7 +21,7 @@ namespace SmartWash.WebUI.Pages
         [Inject] private ICreditCardRepository CreditCardRepository { get; set; }
         [Inject] private IBookingService BookingService { get; set; }
         [Inject] private IUserService UserService { get; set; }
-        [Inject] private ISignalRService SignalR { get; set; }
+        //[Inject] private ISignalRService SignalR { get; set; }
 
         [SupplyParameterFromQuery(Name = "machineId")] private int? MachineId { get; set; }
         [SupplyParameterFromQuery(Name = "machineType")] private string? Type { get; set; }
@@ -44,7 +44,7 @@ namespace SmartWash.WebUI.Pages
             //var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             //User = await UserManager.GetUserAsync(authState.User);
 
-            await SignalR.StartAsync();
+            //await SignalR.StartAsync();
 
             _amount = Type == MachineType.WashingMachine.ToString() ? Constants.WashingMachinePrice : Constants.DryingMachinePrice;
             _amount *= CycleNum.Value;
@@ -119,7 +119,7 @@ namespace SmartWash.WebUI.Pages
                 { "Booking", createdBooking },
             };
 
-            await SignalR.SendBookingAsync();
+            //await SignalR.SendBookingAsync();
 
             var dialog = await DialogService.ShowAsync<BookingDetailsDialogComponent>("Booking Details", parameters, new DialogOptions { MaxWidth = MaxWidth.Small });
             await dialog.Result;

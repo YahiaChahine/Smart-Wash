@@ -12,7 +12,7 @@ namespace SmartWash.WebUI.Pages
         [Parameter]
         public string TypeStr { get; set; }
 
-        [Inject] private ISignalRService SignalR { get; set; }
+        //[Inject] private ISignalRService SignalR { get; set; }
         [Inject] private IMachineService MachineService { get; set; }
 
         private MachineType? Type { get; set; }
@@ -27,12 +27,12 @@ namespace SmartWash.WebUI.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            await SignalR.StartAsync();
+            //await SignalR.StartAsync();
 
-            SignalR.OnMachineBooked( async () =>
-            {
-                await UpdateMachines();
-            });
+            //SignalR.OnMachineBooked( async () =>
+            //{
+            //    await UpdateMachines();
+            //});
 
             Type = TypeStr switch
             {
