@@ -12,50 +12,60 @@ namespace SmartWash.Infrastructure.Repositories
 {
 	public class CreditCardRepository : ICreditCardRepository
 	{
-		private readonly DataContext _context;
+		private readonly IDbContextFactory<DataContext> _contextFactory;
 
-		public CreditCardRepository(DataContext context)
+		public CreditCardRepository(IDbContextFactory<DataContext> contextFactory)
 		{
-			_context = context;
+			_contextFactory = contextFactory;
 		}
 
 		public async Task<CreditCard> AddAsync(CreditCard creditcard)
 		{
-			var result = await _context.CreditCards.AddAsync(creditcard);
-			await _context.SaveChangesAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			var result = await context.CreditCards.AddAsync(creditcard);
+			await context.SaveChangesAsync();
 			return result.Entity;
 		}
 
 		public async Task DeleteAsync(int id)
 		{
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
 			var creditcard = await GetByIdAsync(id);
 			if (creditcard != null)
 			{
-				_context.CreditCards.Remove(creditcard);
-				await _context.SaveChangesAsync();
+                context.CreditCards.Remove(creditcard);
+				await context.SaveChangesAsync();
 			}
 		}
 
 		public async Task<IEnumerable<CreditCard>> GetAllAsync()
 		{
-			return await _context.CreditCards.ToListAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+			
+            return await context.CreditCards.ToListAsync();
 		}
 
 		public async Task<CreditCard> GetByIdAsync(int id)
-		{
-			return await _context.CreditCards.FindAsync(id);
+		{	
+			await using var context = await _contextFactory.CreateDbContextAsync();
+			return await context.CreditCards.FindAsync(id);
 		}
 
 		public async Task UpdateAsync(CreditCard creditcard)
 		{
-			_context.CreditCards.Update(creditcard);
-			await _context.SaveChangesAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+            context.CreditCards.Update(creditcard);
+			await context.SaveChangesAsync();
 		}
 
 		//get by user id
 		public async Task<IEnumerable<CreditCard>> GetByUserAsync(string userID)
 		{
-			return await _context.CreditCards
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			return await context.CreditCards
 			.Where(f => f.UserId == userID)
 			.ToListAsync();
 		}

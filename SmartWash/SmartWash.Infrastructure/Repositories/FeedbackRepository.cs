@@ -13,50 +13,62 @@ namespace SmartWash.Infrastructure.Repositories
 	//build feedback repository
 	public class FeedbackRepository : IFeedbackRepository
 	{
-		private readonly DataContext _context;
-		public FeedbackRepository(DataContext context)
+		private readonly IDbContextFactory<DataContext> _contextFactory;
+		public FeedbackRepository(IDbContextFactory<DataContext> contextFactory)
 		{
-			_context = context;
+			_contextFactory = contextFactory;
 		}
 
 		public async Task<Feedback> AddAsync(Feedback feedback)
 		{
-			var result = await _context.Feedbacks.AddAsync(feedback);
-			await _context.SaveChangesAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			var result = await context.Feedbacks.AddAsync(feedback);
+			await context.SaveChangesAsync();
 			return result.Entity;
 		}
 
 		public async Task DeleteAsync(int id)
 		{
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
 			var feedback = await GetByIdAsync(id);
 			if (feedback != null)
 			{
-				_context.Feedbacks.Remove(feedback);
-				await _context.SaveChangesAsync();
+                context.Feedbacks.Remove(feedback);
+				await context.SaveChangesAsync();
 			}
 		}
 
 		public async Task<IEnumerable<Feedback>> GetAllAsync()
 		{
-			return await _context.Feedbacks.ToListAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			return await context.Feedbacks.ToListAsync();
 		}
 
 		public async Task<Feedback> GetByIdAsync(int id)
 		{
-			return await _context.Feedbacks.FindAsync(id);
+			await using var context = await _contextFactory.CreateDbContextAsync();
+			
+            return await context.Feedbacks.FindAsync(id);
 		}
 
 		public async Task<IEnumerable<Feedback>> GetByUserAsync(string userID)
 		{
-			return await _context.Feedbacks
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			return await context.Feedbacks
 				.Where(f => f.UserId == userID)
 				.ToListAsync();
 		}
 
 		public async Task UpdateAsync(Feedback feedback)
 		{
-			_context.Feedbacks.Update(feedback);
-			await _context.SaveChangesAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+            context.Feedbacks.Update(feedback);
+			await context.SaveChangesAsync();
 		}
 
 

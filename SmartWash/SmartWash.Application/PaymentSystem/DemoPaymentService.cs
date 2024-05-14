@@ -10,9 +10,11 @@ namespace SmartWash.Application.PaymentSystem
 {
     public class DemoPaymentService : IPaymentService
     {
-        public Task<Charge> MakePaymentAsync(CreditCard creditCard, decimal amount, string currency)
+        public async Task<Charge> MakePaymentAsync(CreditCard creditCard, decimal amount, string currency)
         {
-            return Task.FromResult(new Charge
+            await Task.Delay(2000);
+
+            return new Charge
             {
                 Amount = (long)(amount * 100),
                 Currency = currency,
@@ -20,7 +22,7 @@ namespace SmartWash.Application.PaymentSystem
                 Id = Guid.NewGuid().ToString(),
                 Paid = true,
                 Status = "succeeded"
-            });
+            };
         }
     }
 }

@@ -3,12 +3,14 @@
 @using SmartWash.Application.FeedbackSystem
 @using Microsoft.AspNetCore.Identity
 @using System.ComponentModel.DataAnnotations
+@using SmartWash.Application.SignalRSystem
+@using SmartWash.Application.UserSystem
 
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject IFeedbackService FeedbackService
-@inject UserManager<ApplicationUser> UserManager
+@inject IUserService UserService
 @inject IDialogService DialogService
+@inject ISignalRService SignalRService
 
 <PageTitle>Feedback</PageTitle>
 
@@ -56,34 +58,32 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
-        var userName = authState.User?.Identity?.Name;
+        _user = await UserService.GetUser();
 
-        if (authState.User.Identity == null)
+        if (_user is null)
         {
             NavigationManager.NavigateTo("/");
         }
-        _user = await UserManager.FindByNameAsync(userName);
     }
 
     private async Task SubmitFeedback()
     {
-        Feedback feedbackObject;
-        feedbackObject = new Feedback
+        var feedback = new Feedback
 		{
 			Title = Input.Title,
 			Content = Input.Content,
 			UserId = _user.Id,
-            User = _user,
             FeedbackDateTime = DateTime.Now,
 		};
 
-        await FeedbackService.SubmitFeedbackAsync(feedbackObject);
+        await FeedbackService.SubmitFeedbackAsync(feedback);
 		
-        bool? result = await DialogService.ShowMessageBox(
+        await SignalRService.SendFeedbackAsync();
+
+        var result = await DialogService.ShowMessageBox(
             "Alert",
             "Feedback Submitted",
-           yesText: "Yay!", cancelText: "WOW!");
+           yesText: "Ok");
         
         NavigationManager.NavigateTo("/");
     }

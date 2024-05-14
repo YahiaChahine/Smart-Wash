@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -12,41 +13,52 @@ namespace SmartWash.Infrastructure.Repositories
 {
     public class BookingRepository : IBookingRepository
     {
-        private readonly DataContext _context;
+        private readonly IDbContextFactory<DataContext> _contextFactory;
 
-        public BookingRepository(DataContext context)
+        public BookingRepository(IDbContextFactory<DataContext> contextFactory)
         {
-			_context = context;
+			_contextFactory = contextFactory;
 		}
 
         public async Task<Booking> AddAsync(Booking booking)
         {
-			var result = await _context.Bookings.AddAsync(booking);
-			await _context.SaveChangesAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			var result = await context.Bookings.AddAsync(booking);
+			await context.SaveChangesAsync();
 			return result.Entity;
 		}
 		public async Task<Booking> GetByIdAsync(int bookingId)
 		{
-			return await _context.Bookings.FindAsync(bookingId);
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			return await context.Bookings.FindAsync(bookingId);
 		}
 		public async Task<IEnumerable<Booking>> GetAllAsync()
 		{
-			return await _context.Bookings.ToListAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			return await context.Bookings.ToListAsync();
 		}
 		public async Task UpdateAsync(Booking booking)
 		{
-			_context.Bookings.Update(booking);
-			await _context.SaveChangesAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+            context.Bookings.Update(booking);
+			await context.SaveChangesAsync();
 		}
 
 		public async Task DeleteAsync(int bookingId)
 		{
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
 			var booking = await GetByIdAsync(bookingId);
-			if (booking != null)
+			if (context != null)
 			{
-				_context.Bookings.Remove(booking);
-				await _context.SaveChangesAsync();
+                context.Bookings.Remove(booking);
+				await context.SaveChangesAsync();
 			}
 		}
+
     }
 }

@@ -19,30 +19,56 @@
 
     <AuthorizeView Roles="Admin">
 
+        <div class="fullscreen-section text-font">
+            <h1>User Feedbacks</h1>
+            <section style="width: 70%; height: 60%; overflow: auto;">
 
-        <h1>User Feedback List</h1>
-        @foreach (var feedback in feedbackList)
-        {
-            var user = UserManager.FindByIdAsync(feedback.UserId).Result;
-            <p>Feedback from @user.UserName</p>
-            <MudText Align="Align.Center" Typo="Typo.h5">@feedback.Title</MudText>
-            <MudText Align="Align.Center" Typo="Typo.body1">@feedback.Content</MudText>
-            var replies = allReplies.Where(r => r.FeedbackId == feedback.ID).ToList();
+                @if (feedbackList is null)
+                {
+                    <MudProgressCircular Size="Size.Large" Color="Color.Primary" Indeterminate="true" Style="display: block; margin: auto;" />
+                }
+                else if (!feedbackList.Any())
+                {
+                    <MudText Typo="Typo.h5" Align="Align.Center">No feedbacks found</MudText>
+                }
+                else
+                {
+                    <MudStack Spacing="5">
+                        @foreach (var feedback in feedbackList)
+                        {
+                            var user = UserManager.FindByIdAsync(feedback.UserId).Result;
 
-            <br>
-            <MudPaper Width="100%" Square="true">
-                <MudList Clickable="false">
-                    @foreach (var reply in replies)
-                    {
-                        <p>me: </p>
-                        <MudListItem>@reply.Content</MudListItem>
-                        <MudDivider />
-                    }
-                </MudList>
-            </MudPaper>
-            <br>
-            <MudButton Link="@($"/Account/AdminReply/{feedback.ID}")" Variant="Variant.Filled">Reply</MudButton>
-        }
+                            <MudCard>
+                                <MudCardHeader>
+                                    <MudText Typo="Typo.h4">Feedback from @user.UserName</MudText>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudText Typo="Typo.body1">@feedback.Title</MudText>
+                                    <MudText Typo="Typo.body1">Date: @feedback.FeedbackDateTime.ToString("dd/MM/yyyy")</MudText>
+                                    <MudText Typo="Typo.body1" Class="pt-4">@feedback.Content</MudText>
+
+                                </MudCardContent>
+                            </MudCard>
+
+                            var replies = allReplies.Where(r => r.FeedbackId == feedback.ID).ToList();
+
+                            <MudPaper Width="100%" Square="true">
+                                <MudList Clickable="false">
+                                    @foreach (var reply in replies)
+                                    {
+                                        <MudText Typo="Typo.h5" Class="m-3">Reply</MudText>
+                                        <MudListItem>@reply.Content</MudListItem>
+                                        <MudDivider />
+                                    }
+                                </MudList>
+                            </MudPaper>
+
+                            <MudButton Link="@($"/Account/AdminReply/{feedback.ID}")" Variant="Variant.Filled">Reply</MudButton>
+                        }
+                    </MudStack>
+                }
+            </section>
+        </div>
     </AuthorizeView>
 
 </MudContainer>
@@ -50,7 +76,7 @@
 
 @code
 {
-    private List<Feedback> feedbackList { get; set; } = new List<Feedback>();
+    private List<Feedback>? feedbackList { get; set; }
 
     private ApplicationUser _admin { get; set; } = new();
 

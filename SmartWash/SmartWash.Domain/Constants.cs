@@ -14,7 +14,7 @@ namespace SmartWash.Domain
         public static readonly TimeSpan ClosingTime = new(20, 0, 0);
         public static readonly TimeSpan SlotDuration = new(0,1,0,0);
 
-        public const float WashingMachinePrice = 5;
-        public const float DryingMachinePrice = 3;
+        public const decimal WashingMachinePrice = 5;
+        public const decimal DryingMachinePrice = 3;
     }
 }

@@ -15,6 +15,8 @@ namespace SmartWash.Domain.Interfaces
 		Task UpdateAsync(Machine machine);
 		Task DeleteAsync(int id);
 		Task<IEnumerable<Machine>> GetAllAsync();
-	}
-	
+        Task UpdateStatus(int machineId, string status);
+
+    }
+
 }

@@ -34,7 +34,7 @@ namespace SmartWash.Application.BookingSystem
 
             //Add reward points
             if (createdBooking.UserId is not null)
-            {
+            { 
                 var user = await _userService.GetUser();
                 user.PointNum += 10;
             }
@@ -74,6 +74,12 @@ namespace SmartWash.Application.BookingSystem
             await _bookingRepository.UpdateAsync(updatedBooking);
 
             return updatedBooking;
+        }
+
+        public async Task<IEnumerable<Booking>> GetBookingsByUserAsync(string userId)
+        {
+            var bookings = await _bookingRepository.GetAllAsync();
+            return bookings.Where(b => b.UserId == userId);
         }
     }
 

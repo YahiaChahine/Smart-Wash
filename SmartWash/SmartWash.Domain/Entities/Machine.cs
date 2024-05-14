@@ -7,6 +7,7 @@ namespace SmartWash.Domain.Entities
         public int ID { get; set; }
         public MachineType Type { get; set; }
         public bool IsAvailable { get; set; }
+        public string Status { get; set; }
     }
     public enum MachineType
     {

@@ -44,6 +44,38 @@ namespace SmartWash.Application.SignalRSystem
         {
             _hubConnection.On("MachineBooked", handler);
         }
+
+        public async Task SendFeedbackAsync()
+        {
+            if (_hubConnection.State == HubConnectionState.Connected)
+            {
+                await _hubConnection.SendAsync("SendFeedback");
+            }
+        }
+
+        public void OnFeedbackReceived(Action handler)
+        {
+            _hubConnection.On("FeedbackReceived", handler);
+        }
+
+        public async Task SendReplyAsync()
+        {
+            if (_hubConnection.State == HubConnectionState.Connected)
+            {
+                await _hubConnection.SendAsync("SendReply");
+            }
+        }
+
+        public void OnReplyReceived(Action handler)
+        {
+            _hubConnection.On("ReplyReceived", handler);
+        }
+
+        public void OnMachineStatusUpdated(Action<int, string> handler)
+        {
+            _hubConnection.On("MachineStatusUpdated", handler);
+        }
+        
     }
 
 }

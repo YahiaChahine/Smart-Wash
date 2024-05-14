@@ -11,5 +11,11 @@ namespace SmartWash.Application.SignalRSystem
         Task StartAsync();
         Task SendBookingAsync();
         void OnMachineBooked(Action handler);
+        Task SendFeedbackAsync();
+        void OnFeedbackReceived(Action handler);
+        Task SendReplyAsync();
+        void OnReplyReceived(Action handler);
+        void OnMachineStatusUpdated(Action<int, string> handler);
+
     }
 }

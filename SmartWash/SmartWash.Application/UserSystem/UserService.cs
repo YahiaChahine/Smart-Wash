@@ -65,9 +65,10 @@ namespace SmartWash.Application.UserSystem
             var user = await _userManager.GetUserAsync(authState.User);
 
             if (user is null)
-                throw new InvalidOperationException("User not found");
+                return string.Empty;
 
-            throw new NotImplementedException(); // TODO: Return user role
+            var roles = await _userManager.GetRolesAsync(user);
+            return roles.FirstOrDefault();
         }
     }
 }

@@ -51,7 +51,15 @@ namespace SmartWash.Application.FeedbackSystem
 			{
 				user.Notifications = new List<string>();
 			}
-			user.Notifications.Add($"New reply from admin {reply.User.UserName} at {reply.ReplyDateTime}");
+
+			var admin = await _adminManager.FindByIdAsync(reply.UserId);
+
+            if (admin == null)
+            {
+                throw new Exception("Admin not found");
+            }
+
+			user.Notifications.Add($"New reply from admin {admin.UserName} at {reply.ReplyDateTime}");
 			return reply;
 		}
 
@@ -68,7 +76,10 @@ namespace SmartWash.Application.FeedbackSystem
                     {
                         admin.Notifications = new List<string>();
                     }
-                    admin.Notifications.Add($"New feedback from user {feedback.User.UserName} at {feedback.FeedbackDateTime}");
+
+					var user = await _adminManager.FindByIdAsync(feedback.UserId);
+
+                    admin.Notifications.Add($"New feedback from user {user.UserName} at {feedback.FeedbackDateTime}");
 				}
 			}
 

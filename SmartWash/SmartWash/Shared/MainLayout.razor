@@ -2,9 +2,13 @@
 @using MudBlazor
 @using SmartWash.Domain.Entities
 @using Microsoft.AspNetCore.Identity
+@using SmartWash.Application.SignalRSystem
+@using SmartWash.Application.UserSystem
 
 @inject NavigationManager NavigationManager
 @inject SignInManager<ApplicationUser> SignInManager
+@inject ISignalRService SignalRService
+@inject IUserService UserService
 
 <PageTitle>Smart Wash</PageTitle>
 
@@ -29,12 +33,14 @@
                     <Authorized Context="anotherig">
                         <MudMenu>
                             <ActivatorContent>
-                                <MudAvatar Color="Color.Primary">@context.User.Identity?.Name?[0].ToString().ToUpper()</MudAvatar>
+                                <MudBadge Color="Color.Success" Overlap="true" Bordered="true" Visible="_hasNotification">
+                                    <MudAvatar Color="Color.Primary">@context.User.Identity?.Name?[0].ToString().ToUpper()</MudAvatar>
+                                </MudBadge>
                             </ActivatorContent>
                             <ChildContent>
-                                <MudMenuItem Link="/Account/UserFeedback">Write Feedback</MudMenuItem>
-                                <MudMenuItem Link="/Account/FeedbackList">View Feedbacks</MudMenuItem>
-                                <MudMenuItem>Bookings</MudMenuItem>
+                                <MudMenuItem Href="/Account/UserFeedback">Write Feedback</MudMenuItem>
+                                    <MudMenuItem OnClick="UserFeedback">View Feedbacks</MudMenuItem>
+                                <MudMenuItem Href="/Account/Bookings">Bookings</MudMenuItem>
                                 <MudMenuItem>Cameras</MudMenuItem>
                             </ChildContent>
                         </MudMenu>
@@ -43,11 +49,14 @@
                     <NotAuthorized Context="haha">
                         <MudMenu>
                             <ActivatorContent>
+                                <MudBadge Color="Color.Success" Overlap="true" Bordered="true" Visible="_hasNotification">
                                     <MudAvatar Color="Color.Primary">@context.User.Identity?.Name?[0].ToString().ToUpper()</MudAvatar>
-                                </ActivatorContent>
+                                </MudBadge>
+                            </ActivatorContent>
                             <ChildContent>
-                                <MudMenuItem Link="/Account/AdminFeedbackList">User Feedback</MudMenuItem>
+                                <MudMenuItem OnClick="AdminFeedback">User Feedbacks</MudMenuItem>
                                 <MudMenuItem>Cameras</MudMenuItem>
+                                <MudMenuItem Href="/Machines">Machines</MudMenuItem>
                             </ChildContent>
                         </MudMenu>
                     </NotAuthorized>
@@ -64,11 +73,39 @@
 </MudLayout>
 
 @code {
+
+    private bool _hasNotification;
+
     public async Task SignOutUser()
     {
         NavigationManager.NavigateTo("/Account/SignOut");
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await SignalRService.StartAsync();
+
+        if(await UserService.GetUserRole() == "Admin")
+            SignalRService.OnFeedbackReceived(ReceiveNotification);
+    }
+
+    private void AdminFeedback()
+    {
+        _hasNotification = false;
+        NavigationManager.NavigateTo("/Account/AdminFeedbackList");
+    }
+
+    private void UserFeedback()
+    {
+        _hasNotification = false;
+        NavigationManager.NavigateTo("/Account/FeedbackList");
+    }
+
+    private void ReceiveNotification()
+    {
+        _hasNotification = true;
+        StateHasChanged();
+    }
 
 }
 

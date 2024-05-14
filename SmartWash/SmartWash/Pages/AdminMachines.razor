@@ -1,0 +1,86 @@
+﻿@page "/Machines"
+@using SmartWash.WebUI.Shared
+@using SmartWash.Application.FeedbackSystem
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+@using SmartWash.Application.MachineSystem
+@using SmartWash.Application.SignalRSystem
+@using SmartWash.Domain.Interfaces
+
+@inject IMachineRepository MachineRepository
+@inject ISignalRService SignalRService
+
+<PageTitle>Machines List</PageTitle>
+
+<MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
+
+    <AuthorizeView Roles="Admin">
+
+        <div class="fullscreen-section text-font">
+            <h1>Machines</h1>
+            <section style="width: 70%; height: 60%; overflow: auto;">
+
+                @if (Machines is null)
+                {
+                    <MudProgressCircular Size="Size.Large" Color="Color.Primary" Indeterminate="true" Style="display: block; margin: auto;" />
+                }
+                else if (!Machines.Any())
+                {
+                    <MudText Typo="Typo.h5" Align="Align.Center">No machines found</MudText>
+                }
+                else
+                {
+                    <MudStack Spacing="5">
+                        @foreach (var machine in Machines)
+                        {
+                            <MudCard Class="machine-card" Outlined="true" Elevation="0">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.h5">Machine @machine.ID</MudText>
+                                    </CardHeaderContent>
+                                    <CardHeaderActions>
+                                        <MudIcon Icon="@(machine.Type == MachineType.WashingMachine ? Icons.Material.Filled.LocalLaundryService : Icons.Material.Filled.DryCleaning)" Size="Size.Large" Color="Color.Primary"/>
+                                    </CardHeaderActions>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudText Typo="Typo.body1">Type: @machine.Type</MudText>
+                                    <MudText Typo="Typo.body1">Status: @machine.Status</MudText>
+                                </MudCardContent>
+                            </MudCard>
+
+                        }
+                    </MudStack>
+                }
+            </section>
+        </div>
+    </AuthorizeView>
+
+</MudContainer>
+
+
+@code
+{
+    private List<Machine>? Machines { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SignalRService.StartAsync();
+
+        SignalRService.OnMachineStatusUpdated(OnMachineStatusUpdated);
+
+        Machines = (await MachineRepository.GetAllAsync()).ToList();
+    }
+
+    private void OnMachineStatusUpdated(int machineId, string status)
+    {
+        if(Machines is null) return;
+
+        Machines.FirstOrDefault(m => m.ID == machineId).Status = status;
+
+        InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+}

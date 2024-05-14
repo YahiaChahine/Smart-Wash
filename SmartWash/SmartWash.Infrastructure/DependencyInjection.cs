@@ -25,12 +25,13 @@ namespace SmartWash.Infrastructure
 
             //DataAccess
             //var cs = config.GetConnectionString("LocalServer");
-            //services.AddDbContextFactory<DataContext>(options => options.UseSqlServer(cs));
             //services.AddDbContext<DataContext>(options => options.UseSqlServer(cs));
 
             var connectionString = config.GetConnectionString("LocalServer") ?? throw new InvalidOperationException("Connection string 'LocalServer' not found.");
+
+            services.AddDbContextFactory<DataContext>(options => options.UseSqlServer(connectionString));
             services.AddDbContext<DataContext>(options =>
-                options.UseSqlServer(connectionString), ServiceLifetime.Transient);
+                options.UseSqlServer(connectionString));
 
 
             //Repositories

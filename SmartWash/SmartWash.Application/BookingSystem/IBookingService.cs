@@ -12,5 +12,7 @@ namespace SmartWash.Application.BookingSystem
         Task<Booking> CreateBookingAsync(Booking booking);
         Task<Booking> CancelBookingAsync(int bookingId);
         Task<Booking> ModifyBookingAsync(Booking updatedBooking);
+        Task<IEnumerable<Booking>> GetBookingsByUserAsync(string userId);
+
     }
 }

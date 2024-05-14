@@ -13,50 +13,74 @@ namespace SmartWash.Infrastructure.Repositories
 	public class MachineRepository : IMachineRepository
 	{
 		//build the Machine Repository
-		private readonly DataContext _context;
-		public MachineRepository(DataContext context)
+		private readonly IDbContextFactory<DataContext> _contextFactory;
+		public MachineRepository(IDbContextFactory<DataContext> contextFactory)
 		{
-			_context = context;
+			_contextFactory = contextFactory;
 		}
 
 		public async Task<Machine> AddAsync(Machine machine)
 		{
-			var result = await _context.Machines.AddAsync(machine);
-			await _context.SaveChangesAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			var result = await context.Machines.AddAsync(machine);
+			await context.SaveChangesAsync();
 			return result.Entity;
 		}
 
 		public async Task<Machine> GetByIdAsync(int machineId)
 		{
-			return await _context.Machines.FindAsync(machineId);
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			return await context.Machines.FindAsync(machineId);
 		}
 
 		public async Task<IEnumerable<Machine>> GetAllAsync()
 		{
-			return await _context.Machines.ToListAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			return await context.Machines.ToListAsync();
 		}
 
 		public async Task UpdateAsync(Machine machine)
 		{
-			_context.Machines.Update(machine);
-			await _context.SaveChangesAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			context.Machines.Update(machine);
+			await context.SaveChangesAsync();
 		}
 
 		public async Task DeleteAsync(int machineId)
 		{
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
 			var machine = await GetByIdAsync(machineId);
 			if (machine != null)
 			{
-				_context.Machines.Remove(machine);
-				await _context.SaveChangesAsync();
+				context.Machines.Remove(machine);
+				await context.SaveChangesAsync();
 			}
 		}
 
 		public async Task<IEnumerable<Machine>> GetAvailableMachinesAsync()
 		{
-			return await _context.Machines.Where(m => m.IsAvailable).ToListAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			return await context.Machines.Where(m => m.IsAvailable).ToListAsync();
 		}
 
+        public async Task UpdateStatus(int machineId, string status)
+        {
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var machine = await GetByIdAsync(machineId);
+            if (machine != null)
+            {
+				machine.Status = status;
+				context.Machines.Update(machine);
+                await context.SaveChangesAsync();
+            }
+        }
 
 	}
 	

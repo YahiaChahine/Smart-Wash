@@ -12,44 +12,54 @@ namespace SmartWash.Infrastructure.Repositories
 {
 	public class OfferRepository : IOfferRepository
 	{
-		private readonly DataContext _context;
+		private readonly IDbContextFactory<DataContext> _contextFactory;
 
-		public OfferRepository(DataContext context)
+		public OfferRepository(IDbContextFactory<DataContext> contextFactory)
 		{
-			_context = context;
+			_contextFactory = contextFactory;
 		}
 
 		public async Task<Offer> AddAsync(Offer offer)
 		{
-			var result = await _context.Offers.AddAsync(offer);
-			await _context.SaveChangesAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			var result = await context.Offers.AddAsync(offer);
+			await context.SaveChangesAsync();
 			return result.Entity;
 		}
 
 		public async Task DeleteAsync(int id)
 		{
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
 			var offer = await GetByIdAsync(id);
 			if (offer != null)
 			{
-				_context.Offers.Remove(offer);
-				await _context.SaveChangesAsync();
+                context.Offers.Remove(offer);
+				await context.SaveChangesAsync();
 			}
 		}
 
 		public async Task<IEnumerable<Offer>> GetAllAsync()
 		{
-			return await _context.Offers.ToListAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			return await context.Offers.ToListAsync();
 		}
 
 		public async Task<Offer> GetByIdAsync(int id)
 		{
-			return await _context.Offers.FindAsync(id);
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+			return await context.Offers.FindAsync(id);
 		}
 
 		public async Task UpdateAsync(Offer offer)
 		{
-			_context.Offers.Update(offer);
-			await _context.SaveChangesAsync();
+			await using var context = await _contextFactory.CreateDbContextAsync();
+
+            context.Offers.Update(offer);
+			await context.SaveChangesAsync();
 		}
 	}
 }

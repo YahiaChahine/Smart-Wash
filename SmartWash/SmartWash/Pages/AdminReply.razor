@@ -67,13 +67,11 @@
 
     private async Task SubmitFeedback()
     {
-        Reply replyObject;
-        replyObject = new Reply
+        var replyObject = new Reply
             {
                 FeedbackId = int.Parse(FeedbackID),
                 Content = Input.Content,
                 UserId = _user.Id,
-                User = _user,
                 ReplyDateTime = DateTime.Now,
             };
 

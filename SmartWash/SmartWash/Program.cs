@@ -31,6 +31,8 @@ builder.Services.AddDomain();
 
 builder.Services.AddScoped<StateContainer>(); // Stores the state of the application
 
+builder.Services.AddControllers();
+
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
@@ -82,10 +84,12 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-//app.MapHub<LaundryHub>("/laundry-hub"); // Map your Hub here
+app.MapHub<LaundryHub>("/laundry-hub"); // Map your Hub here
 
 app.MapFallbackToFile("index.html");
 
 app.MapAdditionalIdentityEndpoints();
+
+app.MapControllers();
 
 app.Run();

@@ -1,0 +1,66 @@
+﻿@page "/Account/Bookings"
+@using SmartWash.Application.BookingSystem
+@using Microsoft.AspNetCore.Identity
+@using SmartWash.Application.UserSystem
+@using SmartWash.Domain.Interfaces
+
+<PageTitle>Bookings</PageTitle>
+
+<MudContainer Class="fullscreen-section colored" MaxWidth="MaxWidth.False">
+
+    <div class="fullscreen-section text-font">
+        <h1>Bookings</h1>
+        <section style="width: 70%; height: 60%; overflow: auto;">
+            
+            @if(_bookings is null)
+            {
+                <MudProgressCircular Size="Size.Large" Color="Color.Primary" Indeterminate="true" Style="display: block; margin: auto;"/>
+            }
+            else if (!_bookings.Any())
+            {
+                <MudText Typo="Typo.h5" Align="Align.Center">No bookings found</MudText>
+            }
+            else
+            {
+                <MudStack Spacing="5">
+                    @foreach (var booking in _bookings)
+                    {
+                        <MudCard>
+                            <MudCardHeader>
+                                <MudStack Row="false" Spacing="1">
+                                    <MudText Typo="Typo.h4">Booking #@booking.ID</MudText>
+                                    <MudText Typo="Typo.h5">Access Password: @booking.AccessPassword</MudText>
+                                </MudStack>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudText Typo="Typo.body1">Machine @booking?.MachineId</MudText>
+                                <MudText Typo="Typo.body1">@booking?.CycleNum Cycle(s)</MudText>
+                                <MudText Typo="Typo.body1">Date: @booking.StartTime.Value.ToString("dd/MM/yyyy")</MudText>
+                                <MudText Typo="Typo.body1">Start Time: @booking?.StartTime.Value.ToString("hh:mm tt")</MudText>
+                                <MudText Typo="Typo.body1">End Time: @booking?.EndTime.Value.ToString("hh:mm tt")</MudText>
+                                <MudText Typo="Typo.body1">Amount: @booking.Amount AED</MudText>
+
+                            </MudCardContent>
+                        </MudCard>
+                    }
+                </MudStack>
+            }
+        </section>
+    </div>
+</MudContainer>
+
+@code {
+
+    [Inject] private IBookingService BookingService { get; set; }
+    [Inject] private IUserService UserService { get; set; }
+    [Inject] private IBookingRepository BookingRepository { get; set; }
+
+    private ApplicationUser _user { get; set; } = new();
+    private IEnumerable<Booking>? _bookings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _user = await UserService.GetUser();
+        _bookings = await BookingService.GetBookingsByUserAsync(_user.Id);
+    }
+}

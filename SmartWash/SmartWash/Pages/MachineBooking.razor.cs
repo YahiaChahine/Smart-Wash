@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using SmartWash.Application.BookingSystem;
+using SmartWash.Application.PaymentSystem;
 using SmartWash.Application.SignalRSystem;
 using SmartWash.Application.UserSystem;
 using SmartWash.Domain.Entities;
@@ -16,35 +17,32 @@ namespace SmartWash.WebUI.Pages
     public partial class MachineBooking : ComponentBase
     {
         [Parameter] public int ObjectHash { get; set; }
-        [Inject] private NavigationManager NavigationManager { get; set; }
-        [Inject] private IDialogService DialogService { get; set; }
-        [Inject] private ICreditCardRepository CreditCardRepository { get; set; }
-        [Inject] private IBookingService BookingService { get; set; }
-        [Inject] private IUserService UserService { get; set; }
-        //[Inject] private ISignalRService SignalR { get; set; }
+        [Inject] private NavigationManager? NavigationManager { get; set; }
+        [Inject] private IDialogService? DialogService { get; set; }
+        [Inject] private ICreditCardRepository? CreditCardRepository { get; set; }
+        [Inject] private IBookingService? BookingService { get; set; }
+        [Inject] private IUserService? UserService { get; set; }
+        [Inject] private IPaymentService? PaymentService { get; set; }
+        [Inject] private ISignalRService? SignalR { get; set; }
 
         [SupplyParameterFromQuery(Name = "machineId")] private int? MachineId { get; set; }
         [SupplyParameterFromQuery(Name = "machineType")] private string? Type { get; set; }
         [SupplyParameterFromQuery(Name = "startTime")] private DateTime? StartTime { get; set; }
         [SupplyParameterFromQuery(Name = "cycleNum")] private int? CycleNum { get; set; }
 
-        private Booking Booking { get; set; }
+        private Booking? Booking { get; set; }
         private bool IsPaymentMethodSet { get; set; }
         private bool _coinPayment;
-        private float _amount;
+        private decimal _amount;
         private string _promotionCode;
+        private bool _isProcessing;
 
         private CreditCard? CreditCard { get; set; }
         private ApplicationUser? User { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            //Booking = (Booking)StateContainer.ObjectTunnel[ObjectHash];
-
-            //var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            //User = await UserManager.GetUserAsync(authState.User);
-
-            //await SignalR.StartAsync();
+            await SignalR.StartAsync();
 
             _amount = Type == MachineType.WashingMachine.ToString() ? Constants.WashingMachinePrice : Constants.DryingMachinePrice;
             _amount *= CycleNum.Value;
@@ -98,8 +96,23 @@ namespace SmartWash.WebUI.Pages
             if (MachineId is null || StartTime is null || CycleNum is null)
             {
                 NavigationManager.NavigateTo("/browse");
-                throw new InvalidOperationException("MachineId, StartTime, CycleNum and User must be set");
+                throw new InvalidOperationException("MachineId, StartTime, CycleNum must be set");
             }
+
+            _isProcessing = true;
+
+            if (!_coinPayment)
+            {
+                var charge = await PaymentService.MakePaymentAsync(CreditCard, _amount, "AED");
+
+                if (charge.Status != "succeeded")
+                {
+                    await DialogService.ShowMessageBox("Payment failed", "Payment failed, please try again later.");
+                    return;
+                }
+            }
+
+            _isProcessing = false;
 
             Booking = new()
             {
@@ -108,7 +121,7 @@ namespace SmartWash.WebUI.Pages
                 CycleNum = CycleNum.Value,
                 IsPaid = !_coinPayment,
                 UserId = User?.Id,
-                Amount = _amount,
+                Amount = (float)_amount,
             };
 
             var createdBooking = await BookingService.CreateBookingAsync(Booking);
@@ -119,7 +132,7 @@ namespace SmartWash.WebUI.Pages
                 { "Booking", createdBooking },
             };
 
-            //await SignalR.SendBookingAsync();
+            await SignalR.SendBookingAsync();
 
             var dialog = await DialogService.ShowAsync<BookingDetailsDialogComponent>("Booking Details", parameters, new DialogOptions { MaxWidth = MaxWidth.Small });
             await dialog.Result;
