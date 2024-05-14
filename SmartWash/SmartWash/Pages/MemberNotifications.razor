@@ -20,10 +20,18 @@
     <AuthorizeView Roles="Member">
 
 
-        <h1>User Feedback List</h1>
-        @foreach (var notification in notifications)
+        <h1>Notifications</h1>
+        @if (canShow)
         {
-            <MudText Align="Align.Center" Typo="Typo.h5">@notification</MudText>
+            @foreach (var notification in notifications)
+            {
+                <MudText Align="Align.Center" Typo="Typo.h5">@notification</MudText>
+            }
+
+        } else
+        {
+            
+            <MudText Align="Align.Center" Typo="Typo.h5">No Notifications</MudText>
         }
     </AuthorizeView>
 
@@ -35,12 +43,13 @@
 
     private ApplicationUser _user { get; set; } = new();
     private IList<string> notifications { get; set; } = new List<string>();
+    private bool canShow = false;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
         var userName = authState.User?.Identity?.Name;
-
+        canShow = false;
         if (authState.User.Identity == null)
         {
             NavigationManager.NavigateTo("/");
@@ -49,7 +58,10 @@
         _user = await UserManager.FindByNameAsync(userName);
 
         notifications = _user.Notifications;
-
+        if (notifications != null)
+        {
+            canShow = true;
+        }
     }
 
 
