@@ -30,17 +30,17 @@ namespace SmartWash.Application.BookingSystem
                 throw new Exception("Booking overlaps with another booking");
             }
 
-            var createdBooking = await _bookingRepository.AddAsync(booking);
-
             //Add reward points
-            if (createdBooking.UserId is not null)
+            if (booking.UserId is not null)
             { 
                 var user = await _userService.GetUser();
                 user.PointNum += 10;
             }
 
             // Generate the access password
-            createdBooking.GenerateAccessPassword();
+            booking.GenerateAccessPassword();
+
+            var createdBooking = await _bookingRepository.AddAsync(booking);
 
             return createdBooking;
         }

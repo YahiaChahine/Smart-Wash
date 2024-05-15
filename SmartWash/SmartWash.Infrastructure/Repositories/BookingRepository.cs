@@ -31,8 +31,9 @@ namespace SmartWash.Infrastructure.Repositories
 		public async Task<Booking> GetByIdAsync(int bookingId)
 		{
 			await using var context = await _contextFactory.CreateDbContextAsync();
+            var booking = await context.Bookings.FindAsync(bookingId);
 
-			return await context.Bookings.FindAsync(bookingId);
+            return booking;
 		}
 		public async Task<IEnumerable<Booking>> GetAllAsync()
 		{

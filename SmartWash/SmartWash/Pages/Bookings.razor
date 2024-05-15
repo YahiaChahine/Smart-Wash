@@ -56,11 +56,11 @@
     [Inject] private IBookingRepository BookingRepository { get; set; }
 
     private ApplicationUser _user { get; set; } = new();
-    private IEnumerable<Booking>? _bookings;
+    private List<Booking>? _bookings;
 
     protected override async Task OnInitializedAsync()
     {
         _user = await UserService.GetUser();
-        _bookings = await BookingService.GetBookingsByUserAsync(_user.Id);
+        _bookings = (await BookingService.GetBookingsByUserAsync(_user.Id)).ToList();
     }
 }

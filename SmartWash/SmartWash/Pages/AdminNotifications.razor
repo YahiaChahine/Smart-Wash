@@ -3,6 +3,7 @@
 @using SmartWash.Application.FeedbackSystem
 @using Microsoft.AspNetCore.Identity
 @using System.ComponentModel.DataAnnotations
+@using SmartWash.Application.UserSystem
 @using SmartWash.Domain.Interfaces
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -11,7 +12,7 @@
 @inject IFeedbackRepository FeedbackRepository
 @inject IReplyRepository ReplyRepository
 @inject UserManager<ApplicationUser> UserManager
-@inject IDialogService DialogService
+@inject IUserService UserService
 
 <PageTitle>Notifications</PageTitle>
 
@@ -50,15 +51,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
-        var userName = authState.User?.Identity?.Name;
-        canShow = false;
-        if (authState.User.Identity == null)
-        {
-            NavigationManager.NavigateTo("/");
-        }
+        var user = await UserService.GetUser();
 
-        _admin = await UserManager.FindByNameAsync(userName);
+        var userName = user.UserName;
+        canShow = false;
 
         notifications = _admin.Notifications;
 
