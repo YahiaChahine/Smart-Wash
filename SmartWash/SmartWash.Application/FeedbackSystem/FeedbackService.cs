@@ -73,8 +73,7 @@ namespace SmartWash.Application.FeedbackSystem
                     var notification = await _notificationRepository.AddAsync(new Notification
                     {
                         UserID = admin.Id,
-                        Content = $"New reply from {user.FullName} at {feedback.FeedbackDateTime} - {feedback.Title}:" +
-						$"\n{feedback.Content}",
+                        Content = $"New reply from {user.FullName} at {feedback.FeedbackDateTime} - {feedback.Title}",
                         Created = DateTime.Now
                     });
 				}

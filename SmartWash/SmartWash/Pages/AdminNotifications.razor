@@ -24,7 +24,7 @@
         <h1>Notifications</h1>
         @if (canShow)
         {
-            @foreach (var notification in notifications)
+            @foreach (var notification in notifications.Reverse())
             {
                 <MudText Align="Align.Center" Typo="Typo.h5">@notification.Content</MudText>
             }
