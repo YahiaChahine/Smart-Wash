@@ -45,8 +45,10 @@
                             }
                         </MudButtonGroup>
                     }
-                    <MudAutocomplete FullWidth="true" T="string" Label="Promotion Code" @bind-Value="_promotionCode" SearchFunc="@GetPromotionCodes" Variant="Variant.Outlined" ShowProgressIndicator="true" ProgressIndicatorColor="Color.Primary" CoerceText="false"/>
-
+                    @* <MudAutocomplete FullWidth="true" T="string" Label="Promotion Code" @bind-Value="_promotionCode" SearchFunc="@GetPromotionCodes" Variant="Variant.Outlined" ShowProgressIndicator="true" ProgressIndicatorColor="Color.Primary" CoerceText="false"/> *@
+                 
+                  <MudButton FullWidth="true" Disabled="@ButtonDisabled" OnClick="UseRewards">Use Loyalty Points (@User.PointNum points)</MudButton>
+                
                 </MudStack>
 
                 <MudStack Row="true" Justify="Justify.SpaceBetween">

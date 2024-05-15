@@ -36,6 +36,8 @@ namespace SmartWash.WebUI.Pages
         private decimal _amount;
         private string _promotionCode;
         private bool _isProcessing;
+        private bool ButtonDisabled = false;
+        private bool IsGuest = true;
 
         private CreditCard? CreditCard { get; set; }
         private ApplicationUser? User { get; set; }
@@ -48,6 +50,10 @@ namespace SmartWash.WebUI.Pages
             _amount *= CycleNum.Value;
 
             User = await UserService.GetUser();
+            if (User is not null)
+            {
+                IsGuest = false;
+            }
 
             if (User is not null)
             {
@@ -148,6 +154,20 @@ namespace SmartWash.WebUI.Pages
             //return states.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));    
 
             return new List<string> { "PROMO1", "PROMO2" } as IEnumerable<string>;
+        }
+
+        private async Task UseRewards()
+        {
+            ButtonDisabled = true;
+            if (User.PointNum > 100)
+            {
+                _amount = 0;
+                User.PointNum -= 100;
+            } else if (User.PointNum < 100)
+            {
+                _amount *= (User.PointNum/100);
+                User.PointNum = 0;
+            }
         }
     }
 }
