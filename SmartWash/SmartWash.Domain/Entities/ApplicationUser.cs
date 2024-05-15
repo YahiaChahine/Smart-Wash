@@ -9,6 +9,5 @@ namespace SmartWash.Domain.Entities
         public int PointNum { get; set; }
         public bool IsGuest { get; set; }
         public IList<Reply>? Replies { get; set; }
-        public IList<string>? Notifications { get; set; }
     }
 }

@@ -19,6 +19,7 @@ namespace SmartWash.Infrastructure.Data
         public DbSet<CreditCard> CreditCards { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

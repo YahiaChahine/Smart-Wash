@@ -10,6 +10,7 @@
 @inject IFeedbackService FeedbackService
 @inject IFeedbackRepository FeedbackRepository
 @inject IReplyRepository ReplyRepository
+@inject INotificationRepository NotificationRepository
 @inject UserManager<ApplicationUser> UserManager
 @inject IDialogService DialogService
 
@@ -25,7 +26,7 @@
         {
             @foreach (var notification in notifications)
             {
-                <MudText Align="Align.Center" Typo="Typo.h5">@notification</MudText>
+                <MudText Align="Align.Center" Typo="Typo.h5">@notification.Content</MudText>
             }
 
         } else
@@ -42,7 +43,7 @@
 {
 
     private ApplicationUser _user { get; set; } = new();
-    private IList<string> notifications { get; set; } = new List<string>();
+    private IEnumerable<Notification> notifications;
     private bool canShow = false;
 
     protected override async Task OnInitializedAsync()
@@ -57,7 +58,7 @@
 
         _user = await UserManager.FindByNameAsync(userName);
 
-        notifications = _user.Notifications;
+        notifications = await NotificationRepository.GetByUserAsync(_user.Id);
         if (notifications != null)
         {
             canShow = true;
