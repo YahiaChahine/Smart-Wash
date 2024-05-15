@@ -52,7 +52,7 @@ namespace SmartWash.Application.FeedbackSystem
 			var notification = await _notificationRepository.AddAsync(new Notification
 			{
                 UserID = user.Id,
-                Content = $"New reply from admin at {reply.ReplyDateTime}",
+                Content = $"New reply from admin at {reply.ReplyDateTime}: {reply.Content}",
 				Created = DateTime.Now
             });
 
@@ -63,6 +63,7 @@ namespace SmartWash.Application.FeedbackSystem
 		{
 
 			var admins = _adminManager.Users.ToList();
+			var user = await _adminManager.FindByIdAsync(feedback.UserId);
 			foreach (var admin in admins)
 			{
 				var validAdmin = await _adminManager.GetRolesAsync(admin);
@@ -72,7 +73,8 @@ namespace SmartWash.Application.FeedbackSystem
                     var notification = await _notificationRepository.AddAsync(new Notification
                     {
                         UserID = admin.Id,
-                        Content = $"New reply from admin at {feedback.FeedbackDateTime}",
+                        Content = $"New reply from {user.FullName} at {feedback.FeedbackDateTime} - {feedback.Title}:" +
+						$"\n{feedback.Content}",
                         Created = DateTime.Now
                     });
 				}
