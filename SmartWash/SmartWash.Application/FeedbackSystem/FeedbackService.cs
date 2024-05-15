@@ -14,14 +14,16 @@ namespace SmartWash.Application.FeedbackSystem
 	{
 		private readonly IFeedbackRepository _feedbackRepository;
 		private readonly IReplyRepository _replyRepository;
+		private readonly INotificationRepository _notificationRepository;
 		private readonly UserManager<ApplicationUser> _adminManager;
 
 		public FeedbackService(IFeedbackRepository feedbackRepository, UserManager<ApplicationUser> adminManager,
-			IReplyRepository replyRepository)
+			IReplyRepository replyRepository, INotificationRepository notificationRepository)
 		{
 			_feedbackRepository = feedbackRepository;
 			_adminManager = adminManager;
 			_replyRepository = replyRepository;
+			_notificationRepository = notificationRepository;
 		}
 		public async Task<Feedback> SubmitFeedbackAsync(Feedback feedback)
 		{
@@ -47,19 +49,13 @@ namespace SmartWash.Application.FeedbackSystem
 		{
 			var feedback = await _feedbackRepository.GetByIdAsync(reply.FeedbackId);
 			var user = await _adminManager.FindByIdAsync(feedback.UserId);
-			if (user.Notifications == null)
+			var notification = await _notificationRepository.AddAsync(new Notification
 			{
-				user.Notifications = new List<string>();
-			}
+                UserID = user.Id,
+                Content = $"New reply from admin at {reply.ReplyDateTime}: {reply.Content}",
+				Created = DateTime.Now
+            });
 
-			var admin = await _adminManager.FindByIdAsync(reply.UserId);
-
-            if (admin == null)
-            {
-                throw new Exception("Admin not found");
-            }
-
-			user.Notifications.Add($"New reply from admin {admin.UserName} at {reply.ReplyDateTime}");
 			return reply;
 		}
 
@@ -67,19 +63,19 @@ namespace SmartWash.Application.FeedbackSystem
 		{
 
 			var admins = _adminManager.Users.ToList();
+			var user = await _adminManager.FindByIdAsync(feedback.UserId);
 			foreach (var admin in admins)
 			{
 				var validAdmin = await _adminManager.GetRolesAsync(admin);
 				if (validAdmin.Contains("Admin"))
 				{
-                    if (admin.Notifications == null)
+
+                    var notification = await _notificationRepository.AddAsync(new Notification
                     {
-                        admin.Notifications = new List<string>();
-                    }
-
-					var user = await _adminManager.FindByIdAsync(feedback.UserId);
-
-                    admin.Notifications.Add($"New feedback from user {user.UserName} at {feedback.FeedbackDateTime}");
+                        UserID = admin.Id,
+                        Content = $"New reply from {user.FullName} at {feedback.FeedbackDateTime} - {feedback.Title}",
+                        Created = DateTime.Now
+                    });
 				}
 			}
 

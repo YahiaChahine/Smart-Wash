@@ -41,6 +41,7 @@ namespace SmartWash.Infrastructure
             services.AddScoped<IMachineRepository, MachineRepository>();
             services.AddScoped<ICreditCardRepository, CreditCardRepository>();
             services.AddScoped<IReplyRepository, ReplyRepository>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
 
             return services;
         }

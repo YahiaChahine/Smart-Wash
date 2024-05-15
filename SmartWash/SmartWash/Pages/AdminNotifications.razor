@@ -10,6 +10,7 @@
 @inject NavigationManager NavigationManager
 @inject IFeedbackService FeedbackService
 @inject IFeedbackRepository FeedbackRepository
+@inject INotificationRepository NotificationRepository
 @inject IReplyRepository ReplyRepository
 @inject UserManager<ApplicationUser> UserManager
 @inject IUserService UserService
@@ -24,9 +25,9 @@
         <h1>Notifications</h1>
         @if (canShow)
         {
-            @foreach (var notification in notifications)
+            @foreach (var notification in notifications.Reverse())
             {
-                <MudText Align="Align.Center" Typo="Typo.h5">@notification</MudText>
+                <MudText Align="Align.Center" Typo="Typo.h5">@notification.Content</MudText>
             }
         }
         else
@@ -45,7 +46,7 @@
 {
 
     private ApplicationUser _admin { get; set; } = new();
-    private IList<string> notifications { get; set; } = new List<string>();
+    private IEnumerable<Notification> notifications;
     private bool canShow = false;
 
 
@@ -56,7 +57,7 @@
         var userName = user.UserName;
         canShow = false;
 
-        notifications = _admin.Notifications;
+        notifications = await NotificationRepository.GetByUserAsync(_admin.Id);
 
         if (notifications != null)
         {
